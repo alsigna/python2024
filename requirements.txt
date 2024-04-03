@@ -1,0 +1,3 @@
+ipython
+PyYAML
+Jinja2
