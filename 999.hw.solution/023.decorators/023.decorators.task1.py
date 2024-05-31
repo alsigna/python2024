@@ -13,6 +13,7 @@ def benchmark(repeat_count):
                 result = func(*args, **kwargs)
                 total += perf_counter() - t0
             print(f"Среднее время выполнения: {total / repeat_count:.5f}сек.")
+            print(f"Суммарное время выполнения: {total:.5f}сек.")
             return result
 
         return wrapper
