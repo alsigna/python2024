@@ -1,0 +1,18 @@
+Eth0/1:
+  description: to core-1
+  duplex: full
+  features:
+    - ospf
+    - lldp
+    - pim
+  mtu: 9000
+  speed: 10000
+Eth0/2:
+  description: to core-2
+  duplex: full
+  features:
+    - ospf
+    - lldp
+    - pim
+  mtu: 9000
+  speed: 10000

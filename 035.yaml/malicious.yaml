@@ -1,0 +1,12 @@
+malicious:
+  !!python/object/apply:list
+    - !!python/object/new:map
+      - !!python/name:eval
+      - [ "5+4", "1+10", "print('hello from yaml')"]
+
+devices:
+  - name: r1
+    ip: 192.168.1.1
+  - name: r2
+    ip: 192.168.1.2
+
