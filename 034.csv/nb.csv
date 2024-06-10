@@ -1,0 +1,5 @@
+name,status,role,address,manufacturer,type
+rt01,active,router,"moscow, street abc, bld 1",cisco,ASR1001-HX
+rt02,active,router,"moscow, street abc, bld 2",cisco,ASR1001-HX
+rt03,active,router,"moscow, street abc, bld 3",cisco,ASR1001-HX
+rt04,active,router,"moscow, street abc, bld 4",cisco,ASR1001-HX
