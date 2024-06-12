@@ -34,7 +34,7 @@ configs = {
 
 
 def save_configs(configs: dict[str, str], folder: Path = Path("configs")) -> None:
-    if not folder.is_absolute:
+    if not folder.is_absolute():
         folder = Path(Path.cwd(), folder)
 
     folder.mkdir(parents=True, exist_ok=True)
@@ -46,6 +46,6 @@ def save_configs(configs: dict[str, str], folder: Path = Path("configs")) -> Non
 
 
 save_configs(configs)
-# save_configs(configs, Path("my_configs-1"))
-# save_configs(configs, Path("/Users/alexigna/Desktop/python/", "my_configs-2"))
+# save_configs(configs, Path("my_configs-1", "my_configs-2"))
+# save_configs(configs, Path("/Users/alexigna/Desktop/python/my_configs-2"))
 # save_configs(configs, Path(Path.cwd(), "my_configs-1", "my_configs-2"))

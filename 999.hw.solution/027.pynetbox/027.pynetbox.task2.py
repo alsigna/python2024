@@ -15,6 +15,7 @@ def create_device(name: str, site: str, role: str, model: str) -> int:
     nb_model = nb.dcim.device_types.get(model=model)
     nb_role = nb.dcim.device_roles.get(name=role)
     nb_site = nb.dcim.sites.get(name=site)
+
     for t, v in zip((nb_model, nb_role, nb_site), ("модель", "роль", "сайт")):
         if t is None:
             print(f"{v} не существует")
