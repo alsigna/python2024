@@ -1,0 +1,15 @@
+<switch>display authentication-profile configuration
+-------------------------------------------------------------------------------
+    ID        Auth-profile name
+-------------------------------------------------------------------------------
+     0        default_authen_profile
+     1        dot1x_authen_profile
+     2        mac_authen_profile
+     3        dot1xmac_authen_profile
+     4        multi_authen_profile
+     5        abcd_f2g
+     6        abcd_f2a
+     7        abcd_f2a_bypass
+     8        abcd_f2g_bypass
+-------------------------------------------------------------------------------
+    Total 9, printed 9
