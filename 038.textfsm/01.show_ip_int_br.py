@@ -3,7 +3,8 @@ from pprint import pprint
 
 import textfsm
 
-output = "GigabitEthernet1       192.168.122.101 YES NVRAM  up                    up"
+output = "GigabitEthernet1       192.168.122.101 YES NVRAM  down                    up"
+
 
 # Value interface (\S+)
 # Value ip (\S+)
@@ -19,7 +20,7 @@ with open(template, "r") as f:
     fsm = textfsm.TextFSM(f)
 
 result = fsm.ParseText(output)
-# result = fsm.ParseTextToDicts(cli_output)
+# result = fsm.ParseTextToDicts(output)
 
-pprint(fsm.header)
+# pprint(fsm.header)
 pprint(result)
