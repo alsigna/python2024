@@ -1,0 +1,14 @@
+Value Required neighbor_id (\d+\.\d+\.\d+\.\d+)
+Value Required local_ip (\d+\.\d+\.\d+\.\d+)
+Value area (\d+)
+Value local_interface (\S+)
+Value state (\S+)
+			
+Start
+  ^\s*Neighbor\s+${neighbor_id},\s+interface\s+address\s+${local_ip} -> Neighbor
+
+Neighbor
+  ^\s+In\s+the\s+area\s+${area}\s+via\s+interface\s+${local_interface}
+  ^\s+Neighbor\s+priority\s+is\s\d+,\s+State\s+is\s+${state},
+  ^\s+Last\s+retransmission\s+scan\s+time -> Record Start
+

@@ -1,0 +1,14 @@
+Value Key Interface (\S+)
+Value Giants (\d+)
+Value SQETestErr (\S+)
+Value DeferredTx (\d+)
+Value IntMacTxEr (\d+)
+Value IntMacRxEr (\d+)
+Value SymbolErr (\d+)
+
+Start
+  ^Port\s+Giants\s+SQETest-Err\s+ -> Section
+
+Section
+  ^${Interface}\s+${Giants}\s+${SQETestErr}\s+${DeferredTx}\s+${IntMacTxEr}\s+${IntMacRxEr}\s+${SymbolErr} -> Record
+  ^Port\s+InDiscards\s+ -> EOF

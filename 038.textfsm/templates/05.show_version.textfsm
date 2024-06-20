@@ -1,0 +1,21 @@
+Value platform ([\S ]+)
+Value version (\S+)
+Value hostname (\S+)
+Value uptime ([\S ]+)
+Value pid (\S+)
+Value sn (\S+)
+Value confreg (\S+)
+
+Start
+  # Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.9(3)M3, RELEASE SOFTWARE (fc1)
+  ^Cisco\s+IOS\s+Software,\s+${platform}\s+Software\s+\(\S+\), Version\s+${version},
+  # Cisco IOS XE Software, Version 17.03.03
+  ^Cisco\s+${platform}\s+Software, Version\s+${version}
+  # r1 uptime is 1 hour, 5 minutes
+  ^${hostname}\s+uptime\s+is\s+${uptime}$$
+  # cisco CSR1000V (VXE) processor (revision VXE) with 2071913K/3075K bytes of memory.
+  ^cisco\s+${pid}\s+
+  # Processor board ID 9TVPJOLCFIS
+  ^Processor\s+board\s+ID\s+${sn}
+  # Configuration register is 0x2102
+  ^Configuration\s+register\s+is\s+${confreg}

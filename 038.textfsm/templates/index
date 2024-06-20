@@ -1,0 +1,8 @@
+Template, Platform, Command
+03.show_cdp_neighbors.textfsm, cisco_ios, sh[[ow]] cd[[p]] n[[eighbors]]
+05.show_version.textfsm, cisco_ios, sh[[ow]] ver[[sion]]
+06.show_ip_route.textfsm, cisco_ios, sh[[ow]] ip ro[[ute]]
+07.show_etherchannel_summary.textfsm, cisco_ios, sh[[ow]] etherchann[[el]] summ[[ary]]
+08.show_ip_ospf_neighbor_detail.textfsm, cisco_ios, sh[[ow]] ip o[[spf]] ne[[ighbor]] de[[tail]]
+09.show_ip_int_br.textfsm, cisco_ios, sh[[ow]] ip int[[erface]] br[[ief]]
+11.errors_1.textfsm:11.errors_2.textfsm:11.errors_3.textfsm:11.errors_4.textfsm, cisco_nxos, sh[[ow]] int[[erface]] co[[unters]] e[[rrors]]

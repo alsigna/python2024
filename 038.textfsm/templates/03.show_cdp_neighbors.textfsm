@@ -1,0 +1,10 @@
+Value Filldown local_device (\S+)
+Value Required peer_device (\S+)
+Value local_interface (\S+\s\d+(\/\d+)?)
+Value peer_platform ([\S ]+)
+Value peer_interface (\S+\s\d+(\/\d+)?)
+
+Start
+  # r3               Gig 0/2           168              R B             Gig 0/1
+  ^${peer_device}\s+${local_interface}\s+\d+\s+(\S\s)+\s+${peer_platform}\s+${peer_interface}$$ -> Record
+  ^${local_device}[>#]

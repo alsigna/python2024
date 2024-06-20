@@ -1,0 +1,8 @@
+Value Key Interface (\S+)
+Value InDiscards (\d+)
+
+Start
+  ^Port\s+InDiscards -> Section
+
+Section
+  ^${Interface}\s+${InDiscards} -> Record

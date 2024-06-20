@@ -1,0 +1,14 @@
+Value Key Interface (\S+)
+Value AlignErr (\d+)
+Value FCSErr (\d+)
+Value XmitErr (\d+)
+Value RcvErr (\d+)
+Value UnderSize (\d+)
+Value OutDiscards (\d+)
+
+Start
+  ^Port\s+Align-Err\s+FCS-Err\s+ -> Section
+
+Section
+  ^${Interface}\s+${AlignErr}\s+${FCSErr}\s+${XmitErr}\s+${RcvErr}\s+${UnderSize}\s+${OutDiscards} -> Record
+  ^Port\s+Single-Col\s+ -> EOF

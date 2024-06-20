@@ -1,0 +1,14 @@
+Value Key Interface (\S+)
+Value SingleCol (\d+)
+Value MultiCol (\d+)
+Value LateCol (\d+)
+Value ExcesCol (\d+)
+Value CarriSen (\d+)
+Value Runts (\d+)
+
+Start
+  ^Port\s+Single-Col\s+Multi-Col\s+ -> Section
+
+Section
+  ^${Interface}\s+${SingleCol}\s+${MultiCol}\s+${LateCol}\s+${ExcesCol}\s+${CarriSen}\s+${Runts} -> Record
+  ^Port\s+Giants\s+ -> EOF

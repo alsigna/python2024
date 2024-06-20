@@ -1,0 +1,17 @@
+Value po_name (\S+)
+Value po_status (\D+)
+Value protocol (-|LACP|PAgP)
+Value List members ([\w./]+)
+
+Start
+  ^\d+\s+ -> Continue.Record
+  ^\d+\s+${po_name}\(${po_status}\)\s+${protocol}\s? -> Continue
+  ^.*(-|LACP|PAgP)\s*$$
+  ^.*(-|LACP|PAgP)\s+([\w./]+\(\w+\)\s+){0}${members}\(\w+\) -> Continue
+  ^.*(-|LACP|PAgP)\s+([\w./]+\(\w+\)\s+){1}${members}\(\w+\) -> Continue
+  ^.*(-|LACP|PAgP)\s+([\w./]+\(\w+\)\s+){2}${members}\(\w+\) -> Continue
+  ^.*(-|LACP|PAgP)\s+([\w./]+\(\w+\)\s+){3}${members}\(\w+\) -> Continue
+  ^\s+([\w./]+\(\w+\)\s+){0}${members}\(\w+\) -> Continue
+  ^\s+([\w./]+\(\w+\)\s+){1}${members}\(\w+\) -> Continue
+  ^\s+([\w./]+\(\w+\)\s+){2}${members}\(\w+\) -> Continue
+  ^\s+([\w./]+\(\w+\)\s+){3}${members}\(\w+\) -> Continue
