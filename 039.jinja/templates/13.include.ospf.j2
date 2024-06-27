@@ -1,0 +1,9 @@
+router ospf 1
+  {% for interface, data in interfaces.items() %}
+    {% if data.ospf and data.ospf.status %}
+      {% for ip in data.ipv4 %}
+  network {{ ip | ip_network }} {{ ip | ip_wildcard }} area {{ data.ospf.area }}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+!

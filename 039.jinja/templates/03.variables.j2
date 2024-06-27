@@ -1,0 +1,12 @@
+hostname {{ name }}
+
+router ospf 1
+ router-id {{ ospf.rid }}
+ router-id {{ ospf["rid"] }}
+ router-id {{ ospf['rid'] }}
+ network 10.0.0.0 0.255.255.255 area {{ ospf.area }}
+!
+
+interface gi0/0/1
+  switchport trunk allowed vlan add {{ vlans[0] }}
+!

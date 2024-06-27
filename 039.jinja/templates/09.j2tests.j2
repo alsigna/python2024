@@ -1,0 +1,10 @@
+{% for name, data in interfaces.items() %}
+interface {{ name }}
+  {% if data.desription is defined %}  description {{ data.desription }}{% endif +%}
+  {% if data.vlans and data.vlans is iterable %}
+  swithport trunk allowed vlan {{ data.vlans | join(",") }}
+  {% elif data.vlans and data.vlans is number %}
+  swithport trunk allowed vlan {{ data.vlans }}
+  {% endif %}
+!
+{% endfor %}

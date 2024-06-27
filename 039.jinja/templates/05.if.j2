@@ -1,0 +1,11 @@
+{% for name, data in interfaces.items() %}
+interface {{ name }}
+  {% if data.action == "override" %}
+  switchport trunk allowed vlan {{ data.vlan_id }}
+  {% elif data.action == "remove" %}
+  switchport trunk allowed vlan remove {{ data.vlan_id }}
+  {% else %}
+  switchport trunk allowed vlan add {{ data.vlan_id }}
+  {% endif %}
+!
+{% endfor %}

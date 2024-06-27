@@ -1,0 +1,35 @@
+hostname {{ name | d("unknown") }}
+
+auto-cost reference-bandwidth {{ bw | default(10000) }}
+
+owner {{ prefix | default("Mr", True) }} {{ owner }}
+
+{% for trunk, trunk_data in trunks.items() %}
+interface {{ trunk }}
+  switchport trunk allowed vlan {{ trunk_data.vlans | join(",") }}
+{% endfor %}
+
+{% for trunk, trunk_data in trunks | dictsort %}
+interface {{ trunk }}
+  switchport trunk allowed vlan {{ trunk_data.vlans | join(",") }}
+{% endfor %}
+
+{{ loud | lower | list | join(" ") }}
+{{ loud | list | first }}
+
+{{ trunks | dictsort }}
+
+{{ loud | capitalize }}
+
+route_map {{ "rm_%s_to_%s_%s" | format("PE", "RR", "MSK") }}
+
+{{ vlans | length }}
+
+{{ string_with_spaces | trim }}
+
+{{ "192.168.0.1/23" | ip_netmask }}
+{{ "192.168.0.1/23" | ip_broadcast }}
+{{ "192.168.0.1/23" | ip_network_first }}
+{{ "192.168.0.1/23" | ip_network_last }}
+{{ "192.168.0.0/23" | shift_ip_address(2) }}
+{{ "192.168.0.10/23" | shift_ip_address(22) }}

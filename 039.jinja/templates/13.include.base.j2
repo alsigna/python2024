@@ -1,0 +1,5 @@
+{% for interface, data in interfaces.items() %}
+    {% include "./13.include.interface.%s.j2" | format(data.type) +%}
+{% endfor %}
+
+{% include "./13.include.ospf.j2" %}

@@ -1,0 +1,15 @@
+{# simple jinja template #}
+!
+no service pad
+no service dhcp
+!
+hostname {{ hostname }}
+!
+interface Loopback0
+ description mgmt
+ ip address {{ mgmt_ip }} 255.255.255.255
+!
+router ospf 1
+ router-id {{ mgmt_ip }}
+ network 10.0.0.0 0.255.255.255 area 0
+!

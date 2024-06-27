@@ -1,0 +1,10 @@
+interface {{ interface }}
+  description SERVER
+  {% for ip in data.ipv4 %}
+    {% if loop.index0 == 0 %}
+  ip address {{ ip | ip_address }} {{ ip | ip_netmask }}
+    {% else %}
+  ip address {{ ip | ip_address }} {{ ip | ip_netmask }} secondary
+    {% endif %}
+  {% endfor %}
+!

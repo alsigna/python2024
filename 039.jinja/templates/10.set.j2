@@ -1,0 +1,18 @@
+{% set ns = namespace(vlan_from="", vlan_to="") %}
+
+{% for vlan_id, vlan_name in vlans | dictsort %}
+{% if loop.first %}
+  {% set ns.vlan_from = vlan_id%}
+{% elif loop.last %}
+  {% set ns.vlan_to = vlan_id%}
+{% endif %}
+vlan {{ vlan_id }}
+  name {{ vlan_name }}
+!
+{% endfor %}
+
+{% for trunk in trunks %}
+interface {{ trunk }}
+  switchport trunk allowed vlan {{ ns.vlan_from }}-{{ ns.vlan_to }}
+!
+{% endfor %}

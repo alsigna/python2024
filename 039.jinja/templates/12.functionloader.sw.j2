@@ -1,0 +1,10 @@
+
+hostname {{name}}
+!
+interface Loopback10
+  ip address {{ mgmt_ip }} 255.255.255.255
+!
+interface {{ if_name }}
+ switchport mode access
+ switchport access vlan {{ access_vlan }}
+!

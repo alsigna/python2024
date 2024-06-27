@@ -1,0 +1,48 @@
+!
+{% block services %}
+no service pad
+no service dhcp
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+{% endblock %}
+!
+no ip domain lookup
+ip ssh version 2
+!
+aaa new-model
+aaa authentication login default local
+aaa authentication login CON none
+aaa authorization exec default local 
+!
+mpls ldp router-id Loopback0 force
+mpls label protocol ldp
+mpls ldp igp sync holddown 2000
+mpls ldp label
+  allocate global host-routes
+!
+{% block ospf %}
+router ospf 1
+  auto-cost reference-bandwidth {{ ospf_bw | default(200000) }}
+{% endblock %}
+!
+{% block bgp %}
+{% endblock %}
+!
+{% block interfaces %}
+{% endblock %}
+!
+line con 0
+  privilege level 15
+  logging synchronous
+  login authentication CON
+  exec prompt timestamp
+  stopbits 1
+line vty 0 15
+  logging synchronous
+  exec prompt timestamp
+  transport input all
+!
+

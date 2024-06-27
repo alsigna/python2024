@@ -1,0 +1,7 @@
+interface {{ name }}
+  {% if action == "override" %}
+  switchport trunk allowed vlan {{ vlan_id }}
+  {% else %}
+  switchport trunk allowed vlan add {{ vlan_id }}
+  {% endif %}
+!

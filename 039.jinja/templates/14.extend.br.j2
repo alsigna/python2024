@@ -1,0 +1,31 @@
+{% extends "14.extend.base.j2" %}
+
+{% block services %}
+! this will erase service block from base
+{% endblock %}
+
+
+{% block ospf %}
+! my ospf configuration
+!
+{{ super() }}
+  {% for interface, data in interfaces.items() %}
+    {% if data.ospf and data.ospf.status %}
+      {% for ip in data.ipv4 %}
+  network {{ ip | ip_network }} {{ ip | ip_wildcard }} area {{ data.ospf.area }}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+
+----
+those lines will be removed (not part of any block)
+----
+
+{% block interfaces %}
+! interface configuration
+!
+  {% for interface, data in interfaces.items() %}
+    {% include "./14.extend.interface.%s.j2" | format(data.type) +%}
+  {% endfor %}
+{% endblock %}
