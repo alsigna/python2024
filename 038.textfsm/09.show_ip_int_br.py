@@ -11,7 +11,8 @@ GigabitEthernet2       192.168.12.1    YES NVRAM  up                    up
 GigabitEthernet3       unassigned      YES NVRAM  administratively down down    
 GigabitEthernet4       unassigned      YES NVRAM  administratively down down    
 Loopback0              10.255.255.101  YES NVRAM  up                    up      
-GigabitEthernet5/1     10.255.255.102  YES NVRAM  up                    up      
+GigabitEthernet5/1     10.255.255.102  YES NVRAM  up                    up
+GigabitEthernet5/1.1   10.255.255.102  YES NVRAM  up                    up
 """
 
 # Value interface ([\w./]+)

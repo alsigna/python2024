@@ -33,7 +33,7 @@ D        10.10.40.0/24 [90/3328] via 192.168.41.1, 00:58:53, GigabitEthernet0/3
 
 # Value protocol ([DO])
 # Value prefix (([\d.]{1,3}){3}\d{1,3}/\d{1,2})
-# Value List nhop (([\d.]{1,3}){3}\d{1,3})
+# Value List nhop ((\d{1,3}\.){3}\d{1,3})
 
 # Start
 #   ^\w -> Continue.Record

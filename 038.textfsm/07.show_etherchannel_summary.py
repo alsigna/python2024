@@ -1,9 +1,10 @@
 from pathlib import Path
+from pprint import pprint
 
 import tabulate
 import textfsm
 
-cli_output = """
+output = """
 sw1# sh etherchannel summary
 Flags:  D - down        P - bundled in port-channel
         I - stand-alone s - suspended
@@ -25,8 +26,10 @@ Group  Port-channel  Protocol    Ports
 1      Po1(SU)         LACP
 2      Po2(SU)         LACP      Gi0/21(P) Gi0/22(P) Gi0/23(P) Gi0/24(P)
                                  Gi0/25(P) Gi0/26(P) Gi0/27(P) Gi0/28(P)
-                                 Gi0/29(P) Gi0/30(P)
-3      Po3(SU)         LACP      Gi0/31(P)
+                                 Gi0/29(P)
+3      Po3(SU)         LACP      Gi0/31(P) Gi0/32(P) Gi0/33(P)
+4      Po4(SU)         LACP      Gi0/41(P)
+
 """
 
 # Value po_name (\S+)
@@ -50,8 +53,9 @@ Group  Port-channel  Protocol    Ports
 
 template_file = Path(Path(__file__).parent, "templates", Path(__file__).name).with_suffix(".textfsm")
 
-with open(template_file, "r") as _file:
-    fsm = textfsm.TextFSM(_file)
+with open(template_file, "r") as f:
+    fsm = textfsm.TextFSM(f)
 
-result = fsm.ParseText(cli_output)
-print(tabulate.tabulate(result, fsm.header))
+result = fsm.ParseTextToDicts(output)
+pprint(result)
+# print(tabulate.tabulate(result, fsm.header))

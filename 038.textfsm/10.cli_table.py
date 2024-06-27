@@ -33,7 +33,7 @@ cli_table.ParseCmd(
 list_of_dict = []
 for row in cli_table:
     list_of_dict.append(dict(row.items()))
-pprint(list_of_dict)
+# pprint(list_of_dict)
 
 # словарь словарей
 # pprint({row.get("local_interface"): dict(row.items()) for row in cli_table})
