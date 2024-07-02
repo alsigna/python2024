@@ -16,12 +16,13 @@ interface {{ trunk }}
 
 {{ loud | lower | list | join(" ") }}
 {{ loud | list | first }}
+{{ loud[0] }}
 
 {{ trunks | dictsort }}
 
 {{ loud | capitalize }}
 
-route_map {{ "rm_%s_to_%s_%s" | format("PE", "RR", "MSK") }}
+route_map {{ rm_template | format("PE", "RR", "MSK") }}
 
 {{ vlans | length }}
 

@@ -1,11 +1,7 @@
 {% extends "14.extend.base.j2" %}
 
 {% block service_dhcp %}
-{% if service_dhcp %}
-service dhcp enable
-{% else %}
 no service dhcp
-{% endif %}
 {% endblock service_dhcp %}
 
 

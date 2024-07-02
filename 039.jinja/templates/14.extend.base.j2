@@ -1,13 +1,14 @@
 !
 {% block services %}
 no service pad
-no service dhcp
+{% block service_dhcp %}
+{% endblock service_dhcp %}
 service tcp-keepalives-in
 service tcp-keepalives-out
 service timestamps debug datetime msec localtime show-timezone
 service timestamps log datetime msec localtime show-timezone
 service password-encryption
-{% endblock %}
+{% endblock services %}
 !
 no ip domain lookup
 ip ssh version 2

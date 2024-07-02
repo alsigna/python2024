@@ -1,5 +1,9 @@
 {% for interface, data in interfaces.items() %}
-    {% include "./13.include.interface.%s.j2" | format(data.type) +%}
+    {% if data.type in ["server", "user"] %}
+        {% include "./13.include.interface.%s.j2" | format(data.type) +%}
+    {% else %}
+        {% include "./13.include.interface.unused.j2" +%}
+    {% endif %}
 {% endfor %}
 
 {% include "./13.include.ospf.j2" %}

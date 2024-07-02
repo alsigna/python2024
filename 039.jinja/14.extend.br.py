@@ -27,6 +27,7 @@ template_file = str(Path(Path(__file__).name).with_suffix(".j2"))
 template = env.get_template(template_file)
 
 data = {
+    "service_dhcp": True,
     "ospf_bw": 800000,
     "interfaces": {
         "gi0/0/0": {

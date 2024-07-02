@@ -11,9 +11,9 @@ template = Template(template_raw, lstrip_blocks=True, trim_blocks=True)
 data = {
     "vlans": {
         101: "user",
-        102: "voip",
-        103: "server",
         104: "mgmt",
+        103: "server",
+        102: "voip",
     },
     "trunks": [
         "gi0/0/1",

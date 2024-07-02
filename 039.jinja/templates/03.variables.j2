@@ -9,4 +9,5 @@ router ospf 1
 
 interface gi0/0/1
   switchport trunk allowed vlan add {{ vlans[0] }}
+  switchport trunk allowed vlan add {{ vlans }}
 !
