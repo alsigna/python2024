@@ -30,7 +30,7 @@ class ConfigTree:
 
     @property
     def config(self) -> str:
-        if self.line == "":
+        if self.parent is None:
             result = []
             level = 0
         else:

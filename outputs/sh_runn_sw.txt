@@ -1,0 +1,209 @@
+Switch#show running-config
+Building configuration...
+
+Current configuration : 4716 bytes
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Switch
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$zQct$RlZjEVk3PV//OrS4KYm46.
+enable password 123456
+!
+no aaa new-model
+system mtu routing 1500
+ip subnet-zero
+!
+ip dhcp pool vlan2
+   network 192.168.8.0 255.255.255.0
+   default-router 192.168.8.254
+   dns-server 208.67.222.222 208.67.220.220
+   lease 7
+!
+ip dhcp pool vlan3
+   network 192.168.9.0 255.255.255.0
+   default-router 192.168.9.254
+   dns-server 208.67.222.222 208.67.220.220
+   lease 7
+!
+ip dhcp snooping vlan 2-3
+no ip dhcp snooping information option
+ip dhcp snooping
+!
+!
+crypto pki trustpoint TP-self-signed-2135278336
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2135278336
+ revocation-check none
+ rsakeypair TP-self-signed-2135278336
+!
+!
+crypto pki certificate chain TP-self-signed-2135278336
+ certificate self-signed 01
+  3082023F 308201A8 A0030201 02020101 300D0609 2A864886 F70D0101 04050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 32313335 32373833 3336301E 170D3933 30333031 30303030
+  35315A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 31333532
+  37383333 3630819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281
+  8100B628 478437A6 397971B0 B3A62590 C505A465 D7D1E604 DC5F92E2 68868536
+  286DA2A2 3C782BCC 47625B33 5CC22974 04B26BDF F353FEFB DE2A2F27 2964BC40
+  5CDEE5DE 7D9EB86F A32118E6 9345B5C4 8632832E 397D2F58 41F70394 EB49DCE9
+  633DABDF 140E6ECD BA8927B4 8EF18AAB 700C9063 2C571D79 04341253 08507FA4
+  5FB30203 010001A3 67306530 0F060355 1D130101 FF040530 030101FF 30120603
+  551D1104 0B300982 07537769 7463682E 301F0603 551D2304 18301680 1419F564
+  86C05FAB 617613B5 943AF70D 6754DF2C A3301D06 03551D0E 04160414 19F56486
+  C05FAB61 7613B594 3AF70D67 54DF2CA3 300D0609 2A864886 F70D0101 04050003
+  818100A2 3658FCD0 2E373F72 05DB683D 9EDD2244 0439DB83 AA6A65BE 14309A5C
+  9B317329 2E5B4275 0FA7A78C 7681F7EC 8DAD3CC8 85B315F1 DA43BFB4 B4D92F6F
+  0C983A7A 0C8030EE F0AE34DB 81C18F45 A2F2B98A 232430D5 EF2C3667 E9C2C1EF
+  C6457E0A 1EA81332 E7691037 6A2AFF97 DBCAFECB CB673797 7D2D0547 C1D742F0
+  quit
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+!
+interface FastEthernet0/1
+ switchport access vlan 2
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/2
+ switchport access vlan 2
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/3
+ switchport access vlan 2
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/4
+ switchport access vlan 2
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/5
+ switchport access vlan 2
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/6
+ switchport access vlan 2
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/7
+ switchport access vlan 3
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/8
+ switchport access vlan 3
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/9
+ switchport access vlan 3
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/10
+ switchport access vlan 3
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/11
+ switchport access vlan 3
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/12
+ switchport access vlan 3
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+ switchport mode trunk
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no ip address
+ no ip route-cache
+ shutdown
+!
+interface Vlan2
+ ip address 192.168.8.1 255.255.255.0
+ no ip route-cache
+!
+interface Vlan3
+ ip address 192.168.9.1 255.255.255.0
+ no ip route-cache
+!
+no ip http server
+no ip http secure-server
+!
+control-plane
+!
+!
+line con 0
+line vty 0 4
+ password 123456
+ login
+line vty 5 15
+ password 123456
+ login
+!
+end
