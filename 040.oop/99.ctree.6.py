@@ -14,14 +14,21 @@ __all__ = (
 class ConfigTree:
     __slots__ = ["line", "parent", "children"]
 
+    # число пробелов для сдвига блока
     SPACES = "  "
+    # команда выхода из блока
     END_OF_SECTION = "exit"
 
     def __init__(self, line: str = "", parent: ConfigTree | None = None) -> None:
+        # конфигурационная команда
         self.line: str = line
+        # каждый узел имеет родителя, для самого первого уровня это None
         self.parent: ConfigTree | None = parent
+        # каждый узел имеет подчиненные узлы (команды)
         self.children: dict[str, ConfigTree] = {}
 
+        # если для создаваемого узла указан родитель, то помимо создания ссылки на него
+        # так же прописываем создаваемый узел в сабкоманды у родителя
         if parent is not None:
             parent.children[line.strip()] = self
 
