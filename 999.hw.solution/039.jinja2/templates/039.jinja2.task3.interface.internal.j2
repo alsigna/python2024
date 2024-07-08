@@ -1,0 +1,24 @@
+interface {{ name }}
+ {% if data.description %} description {{ data.description }} {% endif +%}
+ ip address {{ data.ip }} {{ data.mask }}
+ {% if data.mtu is defined %} mtu {{ data.mtu }} {% endif +%}
+ {% if data.area is defined %}
+ ip ospf network point-to-point
+ ip ospf bfd strict-mode
+ mpls ip 
+ {% endif %}
+ cdp enable
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ load-interval {{ data.load_interval | default(30) }}
+ carrier-delay msec 0
+ no negotiation auto
+ {% if data.bfd %}
+ bfd interval 50 min_rx 50 multiplier 3
+ no bfd echo
+ {% else %}
+ {% endif %}
+ no mop enabled
+ no shutdown
+!

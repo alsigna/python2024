@@ -1,0 +1,13 @@
+{% include "./039.jinja2.task3.static.j2" +%}
+
+{% include "./039.jinja2.task3.ospf.j2" +%}
+
+{% for name, data in interfaces.items() %}
+    {% if data.shutdown %}
+        {% include "./039.jinja2.task3.interface.shutdown.j2" +%}
+    {% elif data.type in ["internal", "external"] %}
+        {% include "./039.jinja2.task3.interface.%s.j2" | format(data.type) +%}
+    {% else %}
+        {% include "./039.jinja2.task3.interface.shutdown.j2" +%}
+    {% endif %}
+{% endfor %}

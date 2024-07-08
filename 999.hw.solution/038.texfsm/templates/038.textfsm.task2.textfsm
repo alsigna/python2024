@@ -1,0 +1,13 @@
+Value uptime (.+)
+Value id (\d+)
+Value role (\w+)
+Value sw (\w+)
+
+Start
+  ^\s*$$ -> Section
+
+Section
+  ^\w+\s+${id}\(${role}\)\s+: uptime\s+is\s+${uptime}
+  ^Port\s+Single-Col\s+ -> EOF
+  ^Software\s+Version\s+:.*\(${sw}\)
+  ^\s*$$ -> Record

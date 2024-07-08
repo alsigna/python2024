@@ -1,0 +1,22 @@
+S5731-S48P4X's Device status:
+Slot Sub  Type                   Online    Power    Register     Status   Role
+--------------------------------------------------------------------------------------
+1    -    S5731-S48P4X           Present   PowerOn  Registered   Normal   Master
+     PWR1 POWER                  Present   PowerOn  Registered   Normal   NA
+     FAN1 FAN                    Present   PowerOn  Registered   Normal   NA
+     FAN2 FAN                    Present   PowerOn  Registered   Normal   NA
+2    -    S5731-S48P4X           Present   PowerOn  Registered   Normal   Standby
+     PWR1 -                      Present   PowerOff Unregistered -        NA
+     PWR2 POWER                  Present   PowerOn  Registered   Normal   NA
+     FAN1 FAN                    Present   PowerOn  Registered   Normal   NA
+     FAN2 FAN                    Present   PowerOn  Registered   Normal   NA
+3    -    S5731-S48P4X           Present   PowerOn  Registered   Normal   Slave
+     PWR1 -                      Present   PowerOff Unregistered -        NA
+     PWR2 POWER                  Present   PowerOn  Registered   Normal   NA
+     FAN1 FAN                    Present   PowerOn  Registered   Normal   NA
+     FAN2 FAN                    Present   PowerOn  Registered   Normal   NA
+4    -    S5731-S48P4X           Present   PowerOn  Registered   Normal   Slave
+     PWR1 -                      Present   PowerOff Unregistered -        NA
+     PWR2 POWER                  Present   PowerOn  Registered   Normal   NA
+     FAN1 FAN                    Present   PowerOn  Registered   Normal   NA
+     FAN2 FAN                    Present   PowerOn  Registered   Normal   NA

@@ -1,0 +1,13 @@
+Value Filldown hostname (\S+)
+Value id (\d+)
+Value role (\w+)
+Value mac (\S+)
+Value priority (\d+)
+Value state (\b.*\b)
+
+Start
+  ^\s*Switch#\s+Role\s+Mac\s+Address
+  ^${hostname}[#|>]
+  ^\s*\*?${id}\s+${role}\s+${mac}\s+${priority}\s+\d*\s*${state} -> Record
+
+EOF

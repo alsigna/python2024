@@ -1,0 +1,49 @@
+{% for name, data in interfaces.items() %}
+interface {{ name }}
+ {% if data.description %} description {{ data.description }} {% endif +%}
+ {% if data.shutdown %}
+ shutdown
+!
+ {% continue %}
+ {% endif %}
+ {% if data.type == "internal" %}
+    {% if data.area is defined %}
+ ip ospf network point-to-point
+ ip ospf bfd strict-mode
+ mpls ip 
+    {% endif %}
+ cdp enable
+ {% elif data.type == "external" %}
+ mpls bgp forwarding
+ {% else %}
+ shutdown
+!
+ {% continue %}
+ {% endif %}
+ {% if data.mtu is defined %} mtu {{ data.mtu }} {% endif +%}
+ ip address {{ data.ip }} {{ data.mask }}
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ load-interval {{ data.load_interval | default(30) }}
+ carrier-delay msec 0
+ no negotiation auto
+ {% if data.bfd %}
+ bfd interval 50 min_rx 50 multiplier 3
+ no bfd echo
+ {% else %}
+ {% endif %}
+ no mop enabled
+ no shutdown
+!
+{% endfor %}
+
+router ospf 1
+  {% for name, data in interfaces.items() %}
+    {% if data.area is defined %}
+    {% with cidr=data.ip + "/" + data.mask %}
+  network {{ cidr | ip_network }} {{ cidr | ip_wildcard }} area {{ data.area }}
+    {% endwith %}
+    {% endif %}
+  {% endfor %}
+!

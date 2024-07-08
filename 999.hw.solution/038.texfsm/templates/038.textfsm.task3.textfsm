@@ -1,0 +1,6 @@
+Value name (\S+)
+Value ip (\d\S+)
+Value status (\w+)
+
+Start
+  ^${name}\s+${ip}\s+YES\s+\w+\s+${status}\s+(?P=status) -> Record

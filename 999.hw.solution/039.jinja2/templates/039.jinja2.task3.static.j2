@@ -1,0 +1,12 @@
+!
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone year
+service timestamps log   datetime msec localtime show-timezone year
+service password-encryption
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+no service dhcp
+ip dhcp bootp ignore
+no service pad
+!

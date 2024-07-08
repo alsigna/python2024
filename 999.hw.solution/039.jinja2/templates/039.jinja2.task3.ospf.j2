@@ -1,0 +1,9 @@
+router ospf 1
+  {% for name, data in interfaces.items() %}
+    {% if data.area is defined %}
+    {% with cidr=data.ip + "/" + data.mask %}
+  network {{ cidr | ip_network }} {{ cidr | ip_wildcard }} area {{ data.area }}
+    {% endwith %}
+    {% endif %}
+  {% endfor %}
+!
