@@ -1,0 +1,173 @@
+#
+sysname br1
+#
+autosave interval on
+autosave interval 10080
+autosave interval configuration 300
+#
+drop illegal-mac alarm
+#
+clock timezone MSK add 03:00:00
+#
+arp speed-limit source-ip maximum 50
+#
+ip host vpn1 192.168.1.1
+ip host vpn2 192.168.1.2
+ip host vpn3 192.168.1.3
+#
+as-notation plain
+#
+firewall log session enable
+firewall log session nat enable
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name multi_authen_profile
+#
+set flow-stat interval 30
+#
+lldp enable
+#
+dns resolve
+dns server 8.8.8.8
+dns server 1.1.1.1
+#
+license active accept agreement
+license function sece
+license function datae
+#
+dhcp enable
+#
+radius-server template default
+#
+pki realm default
+#
+ipsec proposal default-1
+ encapsulation-mode transport
+ undo esp authentication-algorithm
+ esp encryption-algorithm aes-128
+#
+ike proposal default
+ encryption-algorithm des
+ dh group2
+ authentication-algorithm sha1
+ authentication-method pre-share
+ integrity-algorithm hmac-sha1-96
+ prf hmac-sha1
+ike proposal 1
+ encryption-algorithm aes-256
+ dh group14
+ authentication-algorithm sha2-256
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256
+ prf hmac-sha2-256
+#
+ike peer default-2
+ undo version 2
+ pre-shared-key cipher **
+ ike-proposal 1
+ local-id-type fqdn
+ local-id br2
+ dpd type periodic
+ dpd retransmit-interval 30
+ rsa encryption-padding pkcs1
+ rsa signature-padding pkcs1
+ ikev2 authentication sign-hash sha1
+ike peer LTE
+ undo version 2
+ pre-shared-key cipher **
+ ike-proposal 1
+ local-id-type fqdn
+ local-id br2
+ dpd type periodic
+ dpd retransmit-interval 30
+ rsa encryption-padding pkcs1
+ rsa signature-padding pkcs1
+ ikev2 authentication sign-hash sha1
+#
+traffic classifier DSCP_AF13_CLASSIFIER operator and
+ if-match acl 3210
+#
+traffic behavior DSCP_AF13_BEHAVIOR
+ car cir 10000 pir 20000 cbs 100000 pbs 200000 mode color-blind green pass yellow pass red discard
+ statistic enable
+#
+traffic policy DSCP_AF13_POLICY
+ classifier DSCP_AF13_CLASSIFIER behavior DSCP_AF13_BEHAVIOR precedence 5
+#
+web
+#
+firewall zone Local
+#
+nat alg ftp enable
+nat alg sip enable
+#
+interface Eth-Trunk1
+ undo portswitch
+ mode lacp-static
+#
+interface Eth-Trunk1.2
+ description mgmt
+ dot1q termination vid 2
+ ip address 192.168.2.1 255.255.255.0
+ ip netstream inbound
+ ip netstream outbound
+#
+interface Eth-Trunk1.3
+ description BGP
+ dot1q termination vid 3
+ ip address 192.168.3.1 255.255.255.0
+ ip netstream inbound
+ ip netstream outbound
+#
+interface Eth-Trunk1.4
+ description lte
+ dot1q termination vid 4
+ ip address 192.168.4.1 255.255.255.0
+ nat outbound 3999
+ traffic-filter inbound acl name acl_outside_in
+#
+interface GigabitEthernet0/0/0
+ undo portswitch
+ description sw1 - GigabitEthernet1/0/0
+ eth-trunk 1
+#
+interface GigabitEthernet0/0/1
+ undo portswitch
+ description sw1 - XGigabitEthernet2/0/0
+ eth-trunk 1
+#
+interface GigabitEthernet0/0/2
+ description ISP 
+ ip address 192.168.5.1 255.255.255.0
+ nat outbound 1234
+ traffic-filter inbound acl name acl_outside_in
+#
+interface GigabitEthernet0/0/3
+#
+interface GigabitEthernet0/0/4
+#
+interface GigabitEthernet0/0/5
+#
+interface GigabitEthernet0/0/6
+#
+interface NULL0
+#
+interface LoopBack0
+ description mgmt
+ ip address 192.168.6.1 255.255.255.255
+#
+interface Tunnel0/0/1
+ description dmvpn
+ tcp adjust-mss 1360
+ ip address 192.168.7.1 255.255.255.0
+ tunnel-protocol gre p2mp
+ source GigabitEthernet0/0/22
+ gre key cipher **
+ statistic enable inbound
+ statistic enable outbound
+ nhrp authentication cipher **
+ nhrp registration no-unique
+#

@@ -1,23 +1,38 @@
 from __future__ import annotations
 
 import re
+from abc import ABC, abstractmethod
 from collections import deque
 from textwrap import dedent
 
 __all__ = (
+    "AbstractConfigTree",
     "ConfigTree",
-    "ConfigTreeParser",
-    "ConfigTreeSearcher",
+    "ConfigTreeCisco",
+    "ConfigTreeHuawei",
 )
 
 
-class ConfigTree:
+class AbstractConfigTree(ABC):
     __slots__ = ["line", "parent", "children"]
 
     # число пробелов для сдвига блока
-    SPACES = "  "
+    @property
+    @abstractmethod
+    def SPACES(self) -> str:
+        pass
+
     # команда выхода из блока
-    END_OF_SECTION = "exit"
+    @property
+    @abstractmethod
+    def END_OF_SECTION(self) -> str:
+        pass
+
+    # разделитель секций
+    @property
+    @abstractmethod
+    def SECTION_SEPARATOR(self) -> str:
+        pass
 
     def __init__(self, line: str = "", parent: ConfigTree | None = None) -> None:
         # конфигурационная команда
@@ -114,9 +129,9 @@ class ConfigTree:
         for child in self.children.values():
             result.extend(child._config(symbol=self.SPACES, level=level))
             if level == 0:
-                result.append("!")
+                result.append(self.SECTION_SEPARATOR)
         if level != 0:
-            result.append("!")
+            result.append(self.SECTION_SEPARATOR)
         return "\n".join(result)
 
     @property
@@ -127,18 +142,55 @@ class ConfigTree:
             node = nodes.popleft()
             result.append(node.line)
             if len(node.children) != 0:
-                nodes.appendleft(ConfigTree(line=self.END_OF_SECTION))
+                nodes.appendleft(self.__class__(line=self.END_OF_SECTION))
                 nodes.extendleft(list(node.children.values())[::-1])
         return "\n".join(result)
 
 
-class ConfigTreeParser:
-    SKIP_LINES = ["!"]
+class ConfigTreeCisco(AbstractConfigTree):
+    SPACES = "  "
+    END_OF_SECTION = "exit"
+    SECTION_SEPARATOR = "!"
+
+
+class ConfigTreeHuawei(AbstractConfigTree):
+    SPACES = " "
+    END_OF_SECTION = "quit"
+    SECTION_SEPARATOR = "#"
+
+
+class ConfigTree:
+    MAPPING = {
+        "cisco": ConfigTreeCisco,
+        "huawei": ConfigTreeHuawei,
+    }
+
+    def __new__(cls, platform: str, *args, **kwargs) -> AbstractConfigTree:
+        _class = cls.get_tree_class(platform)
+        return _class(*args, **kwargs)
 
     @classmethod
-    def parse(cls, config: str) -> ConfigTree:
+    def get_tree_class(cls, platform: str) -> AbstractConfigTree:
+        _class = cls.MAPPING.get(platform)
+        if _class is None:
+            raise NotImplementedError("unknown vendor")
+        return _class
+
+
+class ConfigTreeParser:
+    SKIP_LINES = [
+        r"!.*",
+        r"#.*",
+        r"Building\s+configuration.*",
+        r"Current\s+configuration\s+:.*",
+    ]
+
+    def __init__(self, platform: str) -> None:
+        self.ct = ConfigTree.get_tree_class(platform)
+
+    def parse(self, config: str) -> AbstractConfigTree:
         # создаем корень, куда будем цеплять весь конфиг
-        root = ConfigTree()
+        root = self.ct()
         # создаем переменную-стек, в которую будем складывать текущую секцию
         # с самого начала это корень, а дальше будем дописывать конфигурационые секции
         # interface xxx, router bgp xxx, и т.д. в которые заходим
@@ -151,8 +203,10 @@ class ConfigTreeParser:
             # если вдруг строка пустая
             if len(line.strip()) == 0:
                 continue
-            # если наша строка или первый её символ это строка из списка для пропуска
-            if line.strip() in cls.SKIP_LINES or line.strip()[0] in cls.SKIP_LINES:
+
+            # проверяем строку на паттерн для пропуска
+            skip = [re.fullmatch(pattern, line.strip()) for pattern in self.SKIP_LINES]
+            if any(skip):
                 continue
             # считаем текущее количество пробелов в начале строки
             current_spaces = len(line) - len(line.lstrip())
@@ -171,43 +225,13 @@ class ConfigTreeParser:
             spaces = current_spaces
             # создаем узел дерева, сам экземпляр нам не нужен, так как доступ все равно через корень дерева будет
             # родителя берем как узел из sections, это та секция, в которой мы в текущий момент находимся
-            _ = ConfigTree(line=line.strip(), parent=sections[-1])
+            _ = self.ct(line=line.strip(), parent=sections[-1])
 
         return root
 
 
-class ConfigTreeSearcher:
-    @classmethod
-    def _search(
-        cls,
-        ct: ConfigTree,
-        string: str,
-    ) -> list[ConfigTree]:
-        result = []
-
-        if re.search(rf"{string.strip()}", ct.line.strip()) is not None:
-            result.append(ct.copy(children=False))
-        for child in ct.children.values():
-            result.extend(cls._search(child, string))
-
-        return result
-
-    @classmethod
-    def search(
-        cls,
-        ct: ConfigTree,
-        string: str,
-    ) -> ConfigTree:
-        root = ConfigTree()
-        if len(string) == 0:
-            return root
-        filter_result = cls._search(ct, string)
-        for node in filter_result:
-            root.merge(node)
-        return root
-
-
-def assert_tree() -> None:
+def assert_tree_cisco() -> None:
+    vendor = "cisco"
     root_config = dedent(
         """
         no ip http server
@@ -245,82 +269,89 @@ def assert_tree() -> None:
         """
     ).strip()
 
-    root = ConfigTree()
-    http = ConfigTree("no ip http server", root)
-    vlan = ConfigTree("interface Vlan1", root)
-    _ = ConfigTree("ip address 192.168.1.1 255.255.255.0", vlan)
-    _ = ConfigTree("no shutdown", vlan)
+    ct = ConfigTree.get_tree_class(vendor)
+    root = ct()
+    http = ct("no ip http server", root)
+    vlan = ct("interface Vlan1", root)
+    _ = ct("ip address 192.168.1.1 255.255.255.0", vlan)
+    _ = ct("no shutdown", vlan)
 
-    # print("-" * 10)
+    # print("-" * 10, "root confi")
     # print(root.config)
-    # print("-" * 10)
+    # print("-" * 10, "vlan config")
     # print(vlan.config)
-    # print("-" * 10)
+    # print("-" * 10, "root patch")
     # print(root.patch)
     # print("-" * 10)
 
-    assert root.config == root_config, "full config is wrong"
-    assert root.patch == root_patch, "root patch is wrong"
-    assert vlan.config == vlan_config, "vlan config is wrong"
-    assert http.config == http_config, "http config is wrong"
+    assert root.config == root_config, "cisco full config is wrong"
+    assert root.patch == root_patch, "cisco root patch is wrong"
+    assert vlan.config == vlan_config, "cisco vlan config is wrong"
+    assert http.config == http_config, "cisco http config is wrong"
 
 
-def assert_eq() -> None:
-    vlan_configs = [
-        dedent(
-            """
-            interface Vlan1
-              ip address 192.168.1.1 255.255.255.0
-              no shutdown
-            """
-        ).strip(),
-        dedent(
-            """
-            interface Vlan1
-              ip address 192.168.1.1 255.255.255.0
-              no shutdown
-            """
-        ).strip(),
-        dedent(
-            """
-            interface Vlan2
-              ip address 192.168.1.1 255.255.255.0
-              no shutdown
-            """
-        ).strip(),
-        dedent(
-            """
-            interface Vlan1
-              ip address 192.168.1.2 255.255.255.0
-              no shutdown
-            """
-        ).strip(),
-        dedent(
-            """
-            interface Vlan1
-              ip address 192.168.1.1 255.255.255.0
-            """
-        ).strip(),
-    ]
-    vlans = []
-    for vlan_config in vlan_configs:
-        vlans.append(ConfigTreeParser.parse(vlan_config))
+def assert_tree_huawei() -> None:
+    vendor = "huawei"
+    root_config = dedent(
+        """
+        no ip http server
+        #
+        interface Vlan1
+         ip address 192.168.1.1 255.255.255.0
+         undo shutdown
+        #
+        """
+    ).strip()
 
-    # for vlan in vlans:
-    #     print("-" * 10)
-    #     print(vlan.config)
+    root_patch = dedent(
+        """
+        no ip http server
+        interface Vlan1
+        ip address 192.168.1.1 255.255.255.0
+        undo shutdown
+        quit
+        """
+    ).strip()
 
-    assert vlans[0] == vlans[1], "should be True"
-    assert vlans[0] != vlans[2], "should be False"
-    assert vlans[0] != vlans[3], "should be False"
-    assert vlans[0] != vlans[4], "should be False"
+    vlan_config = dedent(
+        """
+        interface Vlan1
+         ip address 192.168.1.1 255.255.255.0
+         undo shutdown
+        #
+        """
+    ).strip()
 
-    ip1 = vlans[0].children.get("interface Vlan1").children.get("ip address 192.168.1.1 255.255.255.0")
-    ip2 = vlans[2].children.get("interface Vlan2").children.get("ip address 192.168.1.1 255.255.255.0")
-    assert ip1 != ip2, "wrong parent check"
+    http_config = dedent(
+        """
+        no ip http server
+        #
+        """
+    ).strip()
+
+    ct = ConfigTree.get_tree_class(vendor)
+    root = ct()
+    http = ct("no ip http server", root)
+    vlan = ct("interface Vlan1", root)
+    _ = ct("ip address 192.168.1.1 255.255.255.0", vlan)
+    _ = ct("undo shutdown", vlan)
+
+    # print("-" * 10, "root config")
+    # print(root.config)
+    # print("-" * 10, "vlan config")
+    # print(vlan.config)
+    # print("-" * 10, "root patch")
+    # print(root.patch)
+    # print("-" * 10)
+
+    assert root.config == root_config, "huawei full config is wrong"
+    assert root.patch == root_patch, "huawei root patch is wrong"
+    assert vlan.config == vlan_config, "huawei vlan config is wrong"
+    assert http.config == http_config, "huawei http config is wrong"
 
 
-def assert_parse() -> None:
+def assert_parse_cisco() -> None:
+    vendor = "cisco"
     root_config = dedent(
         """
         no ip http server
@@ -331,70 +362,55 @@ def assert_parse() -> None:
         !
         """
     ).strip()
-    root = ConfigTreeParser.parse(root_config)
-    assert root.config == root_config, "wrong config parsing"
+    root_patch = dedent(
+        """
+        no ip http server
+        interface Vlan1
+        ip address 192.168.1.1 255.255.255.0
+        no shutdown
+        exit
+        """
+    ).strip()
+    ctp = ConfigTreeParser(vendor)
+    root = ctp.parse(root_config)
+    # print(root.config)
+    # print(root.patch)
+    assert root.config == root_config, "cisco full config is wrong afrer parsing"
+    assert root.patch == root_patch, "cisco root patch is wrong afrer parsing"
 
 
-def assert_merge() -> None:
-    config1 = dedent(
+def assert_parse_huawei() -> None:
+    vendor = "huawei"
+    root_config = dedent(
         """
         no ip http server
-        !
+        #
         interface Vlan1
-          ip address 192.168.1.1 255.255.255.0
-          no shutdown
-        !
+         ip address 192.168.1.1 255.255.255.0
+         no shutdown
+        #
         """
     ).strip()
-    config2 = dedent(
+    root_patch = dedent(
         """
         no ip http server
-        !
-        interface Vlan2
-          ip address 192.168.2.1 255.255.255.0
-        !
-        """
-    ).strip()
-    config3 = dedent(
-        """
-        interface Vlan2
-          description my vlan
-          ip address 192.168.3.1 255.255.255.0 secondary
-        !
-        """
-    ).strip()
-    merged_config = dedent(
-        """
-        no ip http server
-        !
         interface Vlan1
-          ip address 192.168.1.1 255.255.255.0
-          no shutdown
-        !
-        interface Vlan2
-          ip address 192.168.2.1 255.255.255.0
-          description my vlan
-          ip address 192.168.3.1 255.255.255.0 secondary
-        !
+        ip address 192.168.1.1 255.255.255.0
+        no shutdown
+        quit
         """
     ).strip()
-    ct1 = ConfigTreeParser.parse(config1)
-    ct2 = ConfigTreeParser.parse(config2)
-    ct3 = ConfigTreeParser.parse(config3)
-    ct1.merge(ct2)
-    ct1.merge(ct3)
-    assert ct1.config == merged_config, "wrong merge"
+
+    ctp = ConfigTreeParser(vendor)
+    root = ctp.parse(root_config)
+    # print(root.config)
+    # print(root.patch)
+    assert root.config == root_config, "huawei full config is wrong afrer parsing"
+    assert root.patch == root_patch, "huawei root patch is wrong afrer parsing"
 
 
 if __name__ == "__main__":
-    assert_tree()
-    assert_eq()
-    assert_parse()
-    assert_merge()
-
-    with open("sh_runn_rt.txt", "r") as f:
-        config = f.read()
-
-    # print(config)
-    ct = ConfigTreeParser.parse(config)
-    print(ct.config)
+    assert_tree_cisco()
+    assert_tree_huawei()
+    assert_parse_cisco()
+    assert_parse_huawei()

@@ -105,10 +105,9 @@ class ConfigTreeParser:
                 node = list(section[-1].children.values())[-1]
                 section.append(node)
             # мы вышли из секции
-            elif current_space < last_spaces and current_space != 0:
+            elif current_space < last_spaces:
                 _ = section.pop()
-            elif current_space < last_spaces and current_space == 0:
-                section = [root]
+
             _ = ConfigTree(line.lstrip(), section[-1])
             last_spaces = current_space
         return root
