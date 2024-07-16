@@ -1,0 +1,281 @@
+Building configuration...
+
+Current configuration : 10810 bytes
+!
+! Last configuration change at 14:31:21 UTC Thu Jul 4 2024
+!
+version 17.3
+service timestamps debug datetime msec localtime show-timezone year
+service timestamps log datetime msec localtime show-timezone year
+service call-home
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname r1-test
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition mgmt
+ !
+ address-family ipv4
+ exit-address-family
+!
+enable secret 9 $9$AtMS3MMWsYk$naxxw7FnhOExjTCYU/1MystCpcRdon34NEvMH.m40WU
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local 
+!
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+!
+!
+!
+login on-failure log
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description -= RID =-
+ ip address 10.255.255.101 255.255.255.255
+!
+interface Loopback1
+ ip address 100.64.255.101 255.255.255.255
+!
+interface Loopback10
+ description created by nc 
+ ip address 100.64.101.101 255.255.255.255
+ ip ospf network point-to-point
+!
+interface Port-channel1
+ ip address 10.255.12.1 255.255.255.252
+ ip ospf network point-to-point
+ no negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet1
+ vrf forwarding mgmt
+ ip address 192.168.122.101 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ channel-group 1 mode active
+!
+interface GigabitEthernet3
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ channel-group 1 mode active
+!
+interface GigabitEthernet4
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet5
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet6
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet7
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet8
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+router ospf 1
+ router-id 10.255.255.101
+ passive-interface Loopback0
+ network 10.255.12.1 0.0.0.0 area 0
+ network 10.255.255.101 0.0.0.0 area 0
+!
+router ospf 101
+ router-id 1.1.1.101
+ network 10.1.0.0 0.0.0.255 area 0
+ network 10.1.1.0 0.0.0.255 area 0
+ network 10.1.2.0 0.0.0.255 area 0
+!
+router bgp 65000
+ bgp router-id 10.255.255.101
+ bgp log-neighbor-changes
+ neighbor 4.3.2.1 remote-as 65000
+ neighbor 10.255.255.102 remote-as 65000
+ neighbor 10.255.255.102 update-source Loopback0
+ !
+ address-family ipv4
+  network 100.64.255.101 mask 255.255.255.255
+  no neighbor 4.3.2.1 activate
+  neighbor 10.255.255.102 activate
+ exit-address-family
+!
+ip forward-protocol nd
+no ip http server
+ip http secure-server
+!
+ip route vrf mgmt 10.8.0.0 255.255.255.0 192.168.122.1
+ip ssh rsa keypair-name SSH
+!
+ip access-list extended acl_MY_ACCESS
+ 10 permit icmp any any
+ 20 permit tcp 10.8.0.0 0.0.0.255 any eq 22
+ 30 permit udp 10.8.0.0 0.0.0.255 any
+ 50 permit tcp host 10.255.255.102 host 10.255.255.101 eq bgp
+ 60 permit tcp any range 22 telnet host 1.2.3.4
+ip access-list extended acl_MY_ACCESS_1
+ 10 permit icmp any any
+ 20 permit tcp 10.8.0.0 0.0.0.255 any eq 22
+ 30 permit udp 10.8.0.0 0.0.0.255 any
+ 40 permit tcp host 10.255.255.102 eq bgp host 10.255.255.101
+ 50 permit tcp host 10.255.255.102 host 10.255.255.101 eq bgp
+ 60 permit tcp any range 22 telnet host 1.2.3.4
+ 70 permit ospf any any
+ip access-list extended acl_UNDER_TEST
+ 10 permit icmp any any
+ 20 deny   ip host 8.8.8.8 any
+ 30 permit ospf any any
+ 40 permit tcp host 192.168.122.109 host 10.255.255.101 eq 22
+ 50 permit tcp any host 1.2.3.4 eq 1230
+ 60 permit tcp any host 1.2.3.4 eq 1231
+ 70 permit tcp any host 1.2.3.4 eq 1232
+ 80 permit tcp any host 1.2.3.4 eq 1233
+ 90 permit tcp any host 1.2.3.4 eq 1234
+ 100 permit tcp any host 1.2.3.4 eq 1235
+ 110 permit tcp any host 1.2.3.4 eq 1236
+ 120 permit tcp any host 1.2.3.4 eq 1237
+ 130 permit tcp any host 1.2.3.4 eq 1238
+ 140 permit tcp any host 1.2.3.4 eq 1239
+ 150 permit tcp host 10.255.255.108 any eq bgp
+ 160 permit tcp host 192.168.122.109 host 10.255.255.101 eq telnet
+ 170 permit tcp 10.8.0.0 0.0.0.255 host 10.255.255.101 eq telnet
+ip access-list extended acl_UNDER_TEST_1
+ 10 permit ospf any any
+ 20 permit tcp host 192.168.122.109 host 10.255.255.101 eq telnet
+ 30 permit tcp 10.8.0.0 0.0.0.255 host 10.255.255.101 eq telnet
+ 40 permit tcp any host 1.2.3.4 eq 1230
+ 50 permit tcp any host 1.2.3.4 eq 1231
+ 60 permit tcp any host 1.2.3.4 eq 1232
+ 70 permit tcp any host 1.2.3.4 eq 1233
+ 80 permit tcp any host 1.2.3.4 eq 1234
+ 90 permit tcp any host 1.2.3.4 eq 1235
+ 100 permit tcp any host 1.2.3.4 eq 1236
+ 110 permit tcp any host 1.2.3.4 eq 1237
+ 120 permit tcp any host 1.2.3.4 eq 1238
+ 130 permit tcp any host 1.2.3.4 eq 1239
+ 140 permit tcp any host 10.255.255.101 eq 22
+ 150 permit tcp host 10.255.255.109 any eq bgp
+!
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ transport input all
+line vty 5 15
+ transport input all
+!
+!
+!
+event manager applet cmd_log
+ event cli pattern ".*" sync no skip no
+ action 1.0 syslog msg "$_cli_msg"
+!
+telemetry ietf subscription 1
+ encoding encode-kvgpb
+ filter xpath /interfaces-ios-xe-oper:interfaces/interface[name='GigabitEthernet1']/statistics
+ source-address 192.168.122.101
+ source-vrf mgmt
+ stream yang-push
+ update-policy periodic 100
+ receiver ip address 10.8.0.2 57000 protocol native
+netconf-yang
+netconf-yang feature candidate-datastore
+end
