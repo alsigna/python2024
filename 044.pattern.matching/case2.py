@@ -2,11 +2,14 @@ def parse_device(value: str | list | tuple | dict) -> dict[str, str]:
     match value:
         case hostname, ip, platform:
             return {"hostname": hostname, "ip": ip, "platform": platform}
+
         case {"hostname": hostname, "ip": ip, "platform": platform}:
             return {"hostname": hostname, "ip": ip, "platform": platform}
+
         case str() if len(value.split()) == 3:
             hostname, ip, platform = value.split()
             return {"hostname": hostname, "ip": ip, "platform": platform}
+
         case _:
             return {"error": "неизвестный формат данных"}
 

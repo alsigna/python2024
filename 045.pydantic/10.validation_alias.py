@@ -1,4 +1,4 @@
-from pydantic import AliasPath, BaseModel, Field
+from pydantic import AliasChoices, AliasPath, BaseModel, Field
 
 response = {
     "id": 24,
@@ -21,14 +21,16 @@ response = {
         "slug": "asr1001-hx",
         "description": "",
     },
-    "role": {
-        "id": 1,
-        "url": "http://10.211.55.7:8000/api/dcim/device-roles/1/",
-        "display": "router",
-        "name": "router",
-        "slug": "router",
-        "description": "",
-    },
+    "role": [
+        {
+            "id": 1,
+            "url": "http://10.211.55.7:8000/api/dcim/device-roles/1/",
+            "display": "router",
+            "name": "router",
+            "slug": "router",
+            "description": "",
+        }
+    ],
     "tenant": None,
     "platform": None,
     "serial": "123456qwerty",
@@ -40,6 +42,7 @@ response = {
         "name": "hq",
         "slug": "hq",
         "description": "",
+        "facility": "hq1",
     },
     "location": None,
     "rack": None,
@@ -97,16 +100,43 @@ response = {
 class Site(BaseModel):
     name: str
     description: str
+    facility: str
 
 
 class Device(BaseModel):
     name: str
-    model: str = Field(validation_alias=AliasPath("device_type", "model"))
-    vendor: str = Field(validation_alias=AliasPath("device_type", "manufacturer", "name"))
-    role: str = Field(validation_alias=AliasPath("role", "name"))
     serial: str
     site: Site
+    model: str = Field(
+        validation_alias=AliasChoices(
+            AliasPath("device_type", "model"),
+            "model",
+        )
+    )
+    vendor: str = Field(
+        validation_alias=AliasChoices(
+            AliasPath("device_type", "manufacturer", "name"),
+            "vendor",
+        )
+    )
+    role: str = Field(
+        validation_alias=AliasChoices(
+            AliasPath("role", 0, "name"),
+            "role",
+        )
+    )
 
 
-device = Device.model_validate(response)
-print(device)
+device_from_api = Device.model_validate(response)
+print(device_from_api)
+
+# with open("./device.json", "w") as f:
+#     f.write(device_from_api.model_dump_json())
+
+
+with open("./device.json", "r") as f:
+    data = f.read()
+device_from_file = Device.model_validate_json(data)
+print(device_from_file)
+
+print(device_from_file == device_from_api)
