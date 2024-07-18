@@ -1,0 +1,396 @@
+Building configuration...
+
+Current configuration : 10777 bytes
+!
+! Last configuration change at 10:26:52 UTC Thu Jul 18 2024 by admin
+!
+version 17.3
+service timestamps debug datetime msec localtime show-timezone year
+service timestamps log datetime msec localtime show-timezone year
+service call-home
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname r1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition mgmt
+ !
+ address-family ipv4
+ exit-address-family
+!
+enable secret 9 $9$AtMS3MMWsYmhSk$naxxw7FnhOExjTCYU/1MystCpcRdon34NEvMH.m40WU
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+!
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+!
+!
+!
+login on-failure log
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+!
+crypto pki trustpoint TP-self-signed-879935768
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-879935768
+ revocation-check none
+ rsakeypair TP-self-signed-879935768
+!
+!
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+  	quit
+crypto pki certificate chain TP-self-signed-879935768
+ certificate self-signed 01
+  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 38373939 33353736 38301E17 0D323331 32303831 32333033 
+  305A170D 33333132 30373132 33303330 5A303031 2E302C06 03550403 1325494F 
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3837 39393335 
+  37363830 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02 
+  82010100 D6825418 0A0F9877 8F23E220 F37B66E8 7F664193 9909CF3F 749994EB 
+  DDC0E4FA C3C320DD 5B40F5DE 9E7CA392 6A233C65 65A85D81 F2104CB1 6CA3010E 
+  4B3F319F 5D18A2E4 66962F72 ACB93EF3 0E181A0C 0874159F 846B06FD E2AB3FCE 
+  9869D70D D260E253 C9335BC2 C66299AF 79E78BF7 26D6F10D 0473DBF3 5BD62347 
+  7BF78088 F4DE18BA 9D291370 EE6630CD 185DF5CA 765C3625 BD6418C2 36E5090E 
+  7A1D426E 21902B40 9898D6B0 20B84AD7 8AEA5A2A F07F7297 E29F5471 BFE42B6B 
+  D7F9890E 6A21294E 37A44861 476E9AC6 E47231AD 3A2639B6 4926DB3A 0CF9584D 
+  803AD700 403CCB1B 55DFFD49 30B06750 332697F2 91A72627 13359AEA C7C5FB15 
+  06E2EF6D 02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F 
+  0603551D 23041830 1680146E 5A25CEB2 A85FFE93 05E7DE9B 5BE843F3 213FFC30
+  1D060355 1D0E0416 04146E5A 25CEB2A8 5FFE9305 E7DE9B5B E843F321 3FFC300D 
+  06092A86 4886F70D 01010505 00038201 0100AAC5 8FB1A97F 2FA5CE42 3856928A 
+  788A2199 15E7DA36 78FC9645 94DF3C12 DA3C79E9 536C1AEB CFB16802 3D371B4C 
+  F14E2631 F7AB00C2 235B8127 6BBCCA91 9EBB4CD3 EF3015DD A103CC68 7AB2FFB1 
+  EA2883E6 B43D5F77 EDD47A44 886275B0 42D8BAB5 96488FD1 9C3D086D 0DB8FAD9 
+  3577BE4F AA838725 EF3921CF DB32518F 345BFBA4 46D7E7A2 F90A6F3A 8015EAB5 
+  285CA0E6 862E66DC 2A071D48 447A2560 59402ECD 1F1BAEDE A0014CD6 269A508C 
+  24E5BF39 189EBBF1 6D0A3861 4DDC16AC 745ED011 0E0293FD 6A6B8AAB 7A6992D5 
+  EAC56B64 2D2FC28D 17985EB7 707E0287 7FB3EAC0 8590EE50 F7BD3119 1165688E 
+  76AFD3DE 1FEF5483 AB77580B 70FCCDA5 D665
+  	quit
+!
+license udi pid CSR1000V sn 9BZNE1T61US
+diagnostic bootup level minimal
+archive
+ log config
+  logging enable
+memory free low-watermark processor 71497
+!
+!
+spanning-tree extend system-id
+!
+username admin privilege 15 secret 9 $9$h02Iz7GAmP9ZdE$9noXzBoHNVDcrHw7vc0RPhg4KZGfjkhiHpPwawYZQKM
+username user privilege 0 secret 9 $9$KP9NOXQ5TQad1P$/p7PrCeqZv2tA0c/K0kFlnntuKqMFGDfpl6lIlRMMDw
+username cisco privilege 15 secret 9 $9$lwz.KQAP1a7yDk$4lXfQEsYzXky0bfHM0CyHB67ugSV6jQXRYkU.sW28q6
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description -= RID =-
+ ip address 10.255.255.101 255.255.255.255
+!
+interface Loopback1
+ ip address 100.64.255.101 255.255.255.255
+!
+interface Loopback10
+ description created by nc 
+ ip address 100.64.101.101 255.255.255.255
+ ip ospf network point-to-point
+!
+interface Port-channel1
+ ip address 10.255.12.1 255.255.255.252
+ ip ospf network point-to-point
+ no negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet1
+ vrf forwarding mgmt
+ ip address 192.168.122.101 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ channel-group 1 mode active
+!
+interface GigabitEthernet3
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ channel-group 1 mode active
+!
+interface GigabitEthernet4
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet5
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet6
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet7
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet8
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+router ospf 1
+ router-id 10.255.255.101
+ passive-interface Loopback0
+ network 10.255.12.1 0.0.0.0 area 0
+ network 10.255.255.101 0.0.0.0 area 0
+!
+router ospf 101
+ router-id 1.1.1.101
+ network 10.1.0.0 0.0.0.255 area 0
+ network 10.1.1.0 0.0.0.255 area 0
+ network 10.1.2.0 0.0.0.255 area 0
+!
+router bgp 65000
+ bgp router-id 10.255.255.101
+ bgp log-neighbor-changes
+ neighbor 4.3.2.1 remote-as 65000
+ neighbor 10.255.255.102 remote-as 65000
+ neighbor 10.255.255.102 update-source Loopback0
+ !
+ address-family ipv4
+  network 100.64.255.101 mask 255.255.255.255
+  no neighbor 4.3.2.1 activate
+  neighbor 10.255.255.102 activate
+ exit-address-family
+!
+ip forward-protocol nd
+no ip http server
+ip http secure-server
+!
+ip route vrf mgmt 10.8.0.0 255.255.255.0 192.168.122.1
+ip ssh rsa keypair-name SSH
+!
+ip access-list extended acl_MY_ACCESS
+ 10 permit icmp any any
+ 20 permit tcp 10.8.0.0 0.0.0.255 any eq 22
+ 30 permit udp 10.8.0.0 0.0.0.255 any
+ 50 permit tcp host 10.255.255.102 host 10.255.255.101 eq bgp
+ 60 permit tcp any range 22 telnet host 1.2.3.4
+ip access-list extended acl_MY_ACCESS_1
+ 10 permit icmp any any
+ 20 permit tcp 10.8.0.0 0.0.0.255 any eq 22
+ 30 permit udp 10.8.0.0 0.0.0.255 any
+ 40 permit tcp host 10.255.255.102 eq bgp host 10.255.255.101
+ 50 permit tcp host 10.255.255.102 host 10.255.255.101 eq bgp
+ 60 permit tcp any range 22 telnet host 1.2.3.4
+ 70 permit ospf any any
+ip access-list extended acl_UNDER_TEST
+ 10 permit icmp any any
+ 20 deny   ip host 8.8.8.8 any
+ 30 permit ospf any any
+ 40 permit tcp host 192.168.122.109 host 10.255.255.101 eq 22
+ 50 permit tcp any host 1.2.3.4 eq 1230
+ 60 permit tcp any host 1.2.3.4 eq 1231
+ 70 permit tcp any host 1.2.3.4 eq 1232
+ 80 permit tcp any host 1.2.3.4 eq 1233
+ 90 permit tcp any host 1.2.3.4 eq 1234
+ 100 permit tcp any host 1.2.3.4 eq 1235
+ 110 permit tcp any host 1.2.3.4 eq 1236
+ 120 permit tcp any host 1.2.3.4 eq 1237
+ 130 permit tcp any host 1.2.3.4 eq 1238
+ 140 permit tcp any host 1.2.3.4 eq 1239
+ 150 permit tcp host 10.255.255.108 any eq bgp
+ 160 permit tcp host 192.168.122.109 host 10.255.255.101 eq telnet
+ 170 permit tcp 10.8.0.0 0.0.0.255 host 10.255.255.101 eq telnet
+ip access-list extended acl_UNDER_TEST_1
+ 10 permit ospf any any
+ 20 permit tcp host 192.168.122.109 host 10.255.255.101 eq telnet
+ 30 permit tcp 10.8.0.0 0.0.0.255 host 10.255.255.101 eq telnet
+ 40 permit tcp any host 1.2.3.4 eq 1230
+ 50 permit tcp any host 1.2.3.4 eq 1231
+ 60 permit tcp any host 1.2.3.4 eq 1232
+ 70 permit tcp any host 1.2.3.4 eq 1233
+ 80 permit tcp any host 1.2.3.4 eq 1234
+ 90 permit tcp any host 1.2.3.4 eq 1235
+ 100 permit tcp any host 1.2.3.4 eq 1236
+ 110 permit tcp any host 1.2.3.4 eq 1237
+ 120 permit tcp any host 1.2.3.4 eq 1238
+ 130 permit tcp any host 1.2.3.4 eq 1239
+ 140 permit tcp any host 10.255.255.101 eq 22
+ 150 permit tcp host 10.255.255.109 any eq bgp
+!
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ transport input all
+line vty 5 15
+ transport input all
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+ntp server 1.2.3.4 source Loopback0
+!
+!
+!
+!
+event manager applet cmd_log
+ event cli pattern ".*" sync no skip no
+ action 1.0 syslog msg "$_cli_msg"
+!
+telemetry ietf subscription 1
+ encoding encode-kvgpb
+ filter xpath /interfaces-ios-xe-oper:interfaces/interface[name='GigabitEthernet1']/statistics
+ source-address 192.168.122.101
+ source-vrf mgmt
+ stream yang-push
+ update-policy periodic 100
+ receiver ip address 10.8.0.2 57000 protocol native
+netconf-yang
+netconf-yang feature candidate-datastore
+end
+
