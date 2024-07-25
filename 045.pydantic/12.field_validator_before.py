@@ -115,7 +115,7 @@ class Device(BaseModel):
     site: Site
     mgmt_ip: IP = Field(validation_alias=AliasPath("primary_ip4", "address"))
 
-    @field_validator("vendor")
+    @field_validator("vendor", mode="after")
     @classmethod
     def validate_vendor(cls, value: str) -> str:
         if value.lower() not in ["huawei", "cisco", "arista"]:
@@ -126,7 +126,8 @@ class Device(BaseModel):
     @classmethod
     def validate_ip(cls, value: str) -> dict[str, str]:
         address, mask = value.split("/")
-        return dict(address=address, mask=mask)
+        # '192.168.123.123/24' -> {"address": "192.168.123.123", "mask": "24"}
+        return {"address": address, "mask": mask}
 
 
 device = Device.model_validate(response)

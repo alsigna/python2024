@@ -13,3 +13,6 @@ class Settings(BaseSettings):
 settings = Settings()
 
 print(settings)
+
+print(f"{str(settings.url)=}")
+print(f"{settings.token=}")

@@ -12,7 +12,7 @@ paramiko.util.log_to_file(
 with paramiko.SSHClient() as client:
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(
-        hostname="192.168.122.101",
+        hostname="192.168.122.201",
         port=22,
         username="admin",
         password="P@ssw0rd",

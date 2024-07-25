@@ -4,10 +4,16 @@ from io import StringIO
 import pexpect
 
 
-def get_show_output(username: str, password: str, enable: str, ip: str, cmd: str) -> str:
+def get_show_output(
+    username: str,
+    password: str,
+    enable: str,
+    ip: str,
+    cmd: str,
+) -> str:
     def _get_prompt() -> str:
-        ssh.sendline("")
         prompt = ssh.before.strip() + ssh.after
+        ssh.sendline("")
         ssh.expect(prompt)
         return prompt
 
@@ -29,7 +35,7 @@ def get_show_output(username: str, password: str, enable: str, ip: str, cmd: str
             elif m == 2 and prompt.endswith(">"):
                 ssh.sendline("enable")
                 ssh.expect(password_pattern)
-                ssh.sendline(password)
+                ssh.sendline(enable)
                 ssh.expect("#")
                 prompt = _get_prompt()
                 ssh.sendline(cmd)
@@ -40,7 +46,7 @@ def get_show_output(username: str, password: str, enable: str, ip: str, cmd: str
     logfile = StringIO()
     with pexpect.spawn(
         command=f"ssh {username}@{ip}",
-        timeout=5,
+        timeout=120,
         encoding="utf-8",
         logfile=logfile,
     ) as ssh:
@@ -64,6 +70,6 @@ if __name__ == "__main__":
     password = "P@ssw0rd"
     ip = "192.168.122.101"
 
-    output = get_show_output(username, password, password, ip, "show runn")
+    output = get_show_output(username, password, password, ip, "show platform")
     with open("./046.pexpect/09.long.txt", "w") as f:
         f.write(output)

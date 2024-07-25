@@ -8,14 +8,14 @@ from pydantic_settings import BaseSettings
 # export VAULT_PASSWORD=P@ssw0rd
 
 
-vault = Vault("P@ssw0rd")
+# vault = Vault("P@ssw0rd")
 
-data = {
-    "password": "my_secret",
-    "username": "my_name",
-}
-with open("vault.yaml", "w") as f:
-    vault.dump(data, f)
+# data = {
+#     "password": "my_secret",
+#     "username": "my_name",
+# }
+# with open("vault.yaml", "w") as f:
+#     vault.dump(data, f)
 
 
 class Settings(BaseSettings):

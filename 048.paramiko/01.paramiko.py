@@ -14,9 +14,18 @@ client.connect(
     timeout=5,
 )
 ssh = client.invoke_shell()
-ssh.send("show ip interface brief\n")
-time.sleep(2)
+ssh.send("term len 0\n")
+# time.sleep(1)
+ssh.send("show ip int br\n")
+# time.sleep(1)
+ssh.send("show ver\n")
+# time.sleep(1)
+ssh.send("exit\n")
+
+time.sleep(0.15)
+
 result = ssh.recv(10000)
+
 ssh.close()
 
 print(result.decode())

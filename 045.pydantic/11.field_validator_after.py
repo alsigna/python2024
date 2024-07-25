@@ -98,7 +98,7 @@ response = {
 
 class IP(BaseModel):
     address: IPv4Address
-    mask: int = Field(ge=0, le=32)
+    mask: int = Field(ge=0, le=32, default=24)
 
 
 class Site(BaseModel):
@@ -116,10 +116,10 @@ class Device(BaseModel):
 
     @field_validator("vendor")
     @classmethod
-    def validate_vendor(cls, value: str) -> str:
+    def check_vendor(cls, value: str) -> str:
         if value.lower() not in ["huawei", "cisco", "arista"]:
             raise ValueError(f"неизвестный проиводитель {value}")
-        return value.upper()
+        return value[::-1]
 
 
 device = Device.model_validate(response)
