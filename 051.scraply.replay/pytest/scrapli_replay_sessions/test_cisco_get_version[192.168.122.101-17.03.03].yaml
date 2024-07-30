@@ -1,0 +1,22 @@
+192.168.122.101:22:SystemTransport::0:
+  connection_profile: {auth_bypass: false, auth_password: true, auth_private_key: '',
+    auth_private_key_passphrase: false, auth_secondary: false, auth_username: admin,
+    host: 192.168.122.101, port: 22, transport: system}
+  interactions:
+    - {channel_output: "Warning: Permanently added '192.168.122.101' (RSA) to the
+        list of known hosts.\n(admin@192.168.122.101) Password: ", expected_channel_input: REDACTED,
+      expected_channel_input_redacted: true}
+    - {channel_output: '', expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\n\n\nr1#", expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nr1#", expected_channel_input: terminal length 0, expected_channel_input_redacted: false}
+    - {channel_output: terminal length 0, expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nr1#", expected_channel_input: terminal width 512, expected_channel_input_redacted: false}
+    - {channel_output: terminal width 512, expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nr1#", expected_channel_input: show version | i Software,
+      expected_channel_input_redacted: false}
+    - {channel_output: show version | i Software, expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nCisco IOS XE Software, Version 17.03.03\nCisco IOS Software
+        [Amsterdam], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version
+        17.3.3, RELEASE SOFTWARE (fc7)\nr1#", expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nr1#", expected_channel_input: exit, expected_channel_input_redacted: false}
+    - {channel_output: '', expected_channel_input: "\n", expected_channel_input_redacted: false}

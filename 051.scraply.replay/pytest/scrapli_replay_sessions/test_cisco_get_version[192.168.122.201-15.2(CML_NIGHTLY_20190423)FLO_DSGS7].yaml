@@ -1,0 +1,37 @@
+192.168.122.201:22:SystemTransport::0:
+  connection_profile: {auth_bypass: false, auth_password: true, auth_private_key: '',
+    auth_private_key_passphrase: false, auth_secondary: false, auth_username: admin,
+    host: 192.168.122.201, port: 22, transport: system}
+  interactions:
+    - {channel_output: "Warning: Permanently added '192.168.122.201' (RSA) to the
+        list of known hosts.\n\n**************************************************************************\n
+        * IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n
+        * education. IOSv is provided as-is and is not supported by Cisco's      *\n
+        * Technical Advisory Center. Any use or disclosure, in whole or in part, *\n
+        * of the IOSv Software or Documentation to any third party for any       *\n
+        * purposes is expressly prohibited except as otherwise authorized by     *\n
+        * Cisco in writing.                                                      *\n
+        **************************************************************************(admin@192.168.122.201)
+        Password: ", expected_channel_input: REDACTED, expected_channel_input_redacted: true}
+    - {channel_output: '', expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\n\n**************************************************************************\n
+        * IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n
+        * education. IOSv is provided as-is and is not supported by Cisco's      *\n
+        * Technical Advisory Center. Any use or disclosure, in whole or in part, *\n
+        * of the IOSv Software or Documentation to any third party for any       *\n
+        * purposes is expressly prohibited except as otherwise authorized by     *\n
+        * Cisco in writing.                                                      *\n\
+        **************************************************************************\n\
+        sw1#", expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nsw1#", expected_channel_input: terminal length 0, expected_channel_input_redacted: false}
+    - {channel_output: terminal length 0, expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nsw1#", expected_channel_input: terminal width 512, expected_channel_input_redacted: false}
+    - {channel_output: terminal width 512, expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nsw1#", expected_channel_input: show version | i Software,
+      expected_channel_input_redacted: false}
+    - {channel_output: show version | i Software, expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nCisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M),
+        Version 15.2(CML_NIGHTLY_20190423)FLO_DSGS7, EARLY DEPLOYMENT DEVELOPMENT
+        BUILD, synced to  V152_6_0_81_E\nsw1#", expected_channel_input: "\n", expected_channel_input_redacted: false}
+    - {channel_output: "\nsw1#", expected_channel_input: exit, expected_channel_input_redacted: false}
+    - {channel_output: '', expected_channel_input: "\n", expected_channel_input_redacted: false}
