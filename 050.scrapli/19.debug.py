@@ -1,5 +1,6 @@
+import logging
+
 from scrapli import Scrapli
-from scrapli.exceptions import ScrapliConnectionNotOpened, ScrapliException
 from scrapli.response import Response
 
 device = {
@@ -11,15 +12,18 @@ device = {
 }
 
 
+logger = logging.getLogger("scrapli")
+logger.setLevel(logging.DEBUG)
+
+sh = logging.StreamHandler()
+logger.addHandler(sh)
+
+
 def send_command(device: dict[str, str], command: str) -> Response:
     try:
-        with Scrapli(
-            **device,
-            # channel_log=True,
-            # channel_log_mode="append",
-            channel_log="./19.debug.log",
-        ) as ssh:
+        with Scrapli(**device) as ssh:
             return ssh.send_command(command=command)
+
     except Exception as exc:
         print(f"exception class: {exc.__class__.__name__}")
         print(f"exception message: {str(exc)}")

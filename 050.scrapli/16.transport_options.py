@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 from scrapli import Scrapli
+from scrapli.logging import enable_basic_logging
 from scrapli.response import Response
+
+enable_basic_logging("./test.log", "DEBUG")
 
 
 class Device(BaseModel):
@@ -17,12 +20,20 @@ scrapli_template = {
     "auth_password": "P@ssw0rd",
     "auth_strict_key": False,
     "ssh_config_file": "./ssh_scrapli",
+    # "transport_options": {
+    #     "open_cmd": [
+    #         "-o",
+    #         "KexAlgorithms=+diffie-hellman-group-exchange-sha1",
+    #         "-o",
+    #         "HostKeyAlgorithms=+ssh-rsa",
+    #     ]
+    # },
 }
 
 devices = {
-    Device(host="192.168.122.107", platform="huawei_vrp"): "display arp",
-    Device(host="192.168.122.101", platform="cisco_iosxe", transport="telnet"): "show ip arp",
-    Device(host="192.168.122.106", platform="eltex_esr"): "show ip interface",
+    # Device(host="192.168.122.107", platform="huawei_vrp"): "display arp",
+    Device(host="192.168.122.201", platform="cisco_iosxe"): "show ip int br",
+    # Device(host="192.168.122.106", platform="eltex_esr"): "show ip interface",
 }
 
 

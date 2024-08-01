@@ -1,4 +1,7 @@
+import time
+
 from scrapli import Scrapli
+from scrapli.exceptions import ScrapliConnectionError
 
 device = {
     "platform": "cisco_iosxe",
@@ -18,9 +21,14 @@ def check_alive(device: dict[str, str]) -> None:
             isalive = ssh.isalive()
             print(f"after connect: {isalive=}")
 
-            ssh.close()
+            time.sleep(20)
+            try:
+                _ = ssh.get_prompt()
+            except ScrapliConnectionError:
+                ssh.open()
+
             isalive = ssh.isalive()
-            print(f"after close: {isalive=}")
+            print(f"after clear: {isalive=}")
 
             if not isalive:
                 ssh.open()
