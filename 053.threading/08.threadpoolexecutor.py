@@ -10,8 +10,8 @@ def foo(count: int, flag: bool) -> None:
         time.sleep(1)
 
 
-with ThreadPoolExecutor() as pool:
-    pool.map(foo, (7, 5, 2), (True, False, True))
+# with ThreadPoolExecutor() as pool:
+#     pool.map(foo, (7, 5, 2), (False, True, False))
 
 params = (
     (7, True),
@@ -19,5 +19,5 @@ params = (
     (2, True),
 )
 
-# with ThreadPoolExecutor() as pool:
-#     pool_map = pool.map(foo, *list(zip(*params)))
+with ThreadPoolExecutor() as pool:
+    pool_map = pool.map(foo, *list(zip(*params)))

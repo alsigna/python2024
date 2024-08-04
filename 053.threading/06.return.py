@@ -50,16 +50,20 @@ def print_version_sem(host: str) -> str:
         return print_version(host)
 
 
-ids = [1, 2]
-ids.extend(range(9, 19))
-ip_addresses = [f"192.168.122.1{i:02}" for i in ids]
-
-### последовательный сбор
-# for ip in ip_addresses:
-#     try:
-#         print_version(ip)
-#     except:
-#         pass
+ip_addresses = [
+    "192.168.122.102",
+    "192.168.122.109",
+    "192.168.122.110",
+    "192.168.122.111",
+    "192.168.122.112",
+    "192.168.122.113",
+    "192.168.122.114",
+    "192.168.122.115",
+    "192.168.122.116",
+    "192.168.122.117",
+    "192.168.122.101",
+    "192.168.122.118",
+]
 
 ### сбор в потоках
 threads: list[Thread] = []
@@ -79,5 +83,5 @@ for t in threads:
     results.append(t.join())
 
 
-for r in results:
-    print(r)
+dict_results = dict(zip(ip_addresses, results))
+print(dict_results)

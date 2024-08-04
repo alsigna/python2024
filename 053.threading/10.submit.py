@@ -1,3 +1,4 @@
+import time
 from concurrent.futures import Future, ThreadPoolExecutor
 
 from scrapli import Scrapli
@@ -27,6 +28,8 @@ def print_version(host: str) -> str:
 
 
 def print_serial(host: str) -> str:
+    if host == "192.168.122.101":
+        time.sleep(5)
     print(f"{host:>15}: подключение...")
     device = scrapli_template | {"host": host}
 
@@ -41,21 +44,31 @@ def print_serial(host: str) -> str:
     return result
 
 
-ids = [1, 2]
-ids.extend(range(9, 19))
-ip_addresses = [f"192.168.122.1{i:02}" for i in ids]
+ip_addresses = [
+    "192.168.122.102",
+    "192.168.122.109",
+    "192.168.122.110",
+    "192.168.122.111",
+    "192.168.122.112",
+    "192.168.122.113",
+    "192.168.122.114",
+    "192.168.122.115",
+    "192.168.122.116",
+    "192.168.122.117",
+    "192.168.122.101",
+    "192.168.122.118",
+]
 
-
-results: list[Future] = []
+futures: list[Future] = []
 with ThreadPoolExecutor(max_workers=5) as pool:
     for ip in ip_addresses:
         if int(ip.split(".")[-1]) % 2 == 0:
-            results.append(pool.submit(print_version, ip))
+            futures.append(pool.submit(print_version, ip))
         else:
-            results.append(pool.submit(print_serial, ip))
+            futures.append(pool.submit(print_serial, ip))
     print("задачи поставлены в очередь")
 
 print("код за пределами контекстного менеджера")
 
-for r in results:
+for r in futures:
     print(r.result())

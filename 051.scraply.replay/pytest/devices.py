@@ -40,3 +40,9 @@ class CiscoDevice:
             return "__FAILURE__"
 
         return version[0]
+
+
+if __name__ == "__main__":
+    device = CiscoDevice("192.168.122.113")
+    version = device.get_version()
+    print(version)

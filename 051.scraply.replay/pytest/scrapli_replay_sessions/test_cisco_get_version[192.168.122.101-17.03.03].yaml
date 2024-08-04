@@ -15,7 +15,7 @@
     - {channel_output: "\nr1#", expected_channel_input: show version | i Software,
       expected_channel_input_redacted: false}
     - {channel_output: show version | i Software, expected_channel_input: "\n", expected_channel_input_redacted: false}
-    - {channel_output: "\nCisco IOS XE Software, Version 17.03.03\nCisco IOS Software
+    - {channel_output: "\nCisco IOS XE Software, Version 17.03.04\nCisco IOS Software
         [Amsterdam], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version
         17.3.3, RELEASE SOFTWARE (fc7)\nr1#", expected_channel_input: "\n", expected_channel_input_redacted: false}
     - {channel_output: "\nr1#", expected_channel_input: exit, expected_channel_input_redacted: false}
