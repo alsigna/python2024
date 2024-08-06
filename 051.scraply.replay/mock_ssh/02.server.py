@@ -11,9 +11,10 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-    try:
-        loop.run_until_complete(main())
-        loop.run_forever()
-    finally:
-        loop.close()
+    asyncio.run(main())
+    # loop = asyncio.new_event_loop()
+    # try:
+    #     loop.run_until_complete(main())
+    #     loop.run_forever()
+    # finally:
+    #     loop.close()

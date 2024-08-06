@@ -1,0 +1,25 @@
+import asyncio
+from time import perf_counter
+
+import aiohttp
+
+
+async def get_netbox_version() -> None:
+    url = "https://demo.netbox.dev/api/status/"
+
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
+        async with session.get(url) as response:
+            response.raise_for_status()
+            j = await response.json()
+    print(f"NB version {j.get('netbox-version', "unknown")}")
+
+
+async def main() -> None:
+    await asyncio.gather(*(get_netbox_version() for _ in range(10)))
+
+
+if __name__ == "__main__":
+    t0 = perf_counter()
+    asyncio.run(main())
+    print("асинхронный код закончен")
+    print(f"{perf_counter() - t0:.4f} сек")
