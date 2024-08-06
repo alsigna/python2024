@@ -18,6 +18,22 @@ class Watchdog(metaclass=Singleton):
         return f"<WD: threshold={self.threshold}>"
 
 
+# class Watchdog:
+#     _INSTANCE = None
+
+#     def __new__(cls, *args, **kwargs):
+#         if not isinstance(cls._INSTANCE, cls):
+#             cls._INSTANCE = super().__new__(cls)
+#         return cls._INSTANCE
+
+#     def __init__(self, threshold: int = 5) -> None:
+#         self.fails = 0
+#         self.threshold = threshold
+
+#     def __repr__(self) -> str:
+#         return f"<WD: threshold={self.threshold}>"
+
+
 wd1 = Watchdog(threshold=10)
 wd2 = Watchdog(threshold=20)
 
