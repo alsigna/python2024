@@ -38,5 +38,5 @@ ip_addresses = [
 
 
 if __name__ == "__main__":
-    # python 01.async.netmiko.py  1.14s user 0.10s system 4% cpu 27.308 total
+    # python 21.async.netmiko.py  1.28s user 0.09s system 6% cpu 20.319 total
     get_output(ip_addresses, "show version")

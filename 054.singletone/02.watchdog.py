@@ -4,6 +4,7 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from random import randint
 
 from scrapli import Scrapli
+from scrapli.exceptions import ScrapliAuthenticationFailed
 
 scrapli_template = {
     "platform": "cisco_iosxe",
@@ -34,23 +35,37 @@ class Watchdog(metaclass=Singleton):
         return f"<WD: threshold={self.threshold}>"
 
 
-ids = [1, 2]
-ids.extend(range(9, 19))
-ip_addresses = [f"192.168.122.1{i:02}" for i in ids]
+ip_addresses = [
+    "192.168.122.109",
+    "192.168.122.110",
+    "192.168.122.111",
+    "192.168.122.112",
+    "192.168.122.113",
+    "192.168.122.114",
+    "192.168.122.115",
+    "192.168.122.116",
+    "192.168.122.117",
+    "192.168.122.118",
+]
 
 
 def print_version(host: str) -> str:
     wd = Watchdog(threshold=3)
     thr_name = threading.current_thread().name
-    print(f"[{thr_name}] число ошибок при старте потока {wd.fails}")
+    print(f"[{thr_name}] поток запущен, число ошибок при старте потока {wd.fails}")
     if wd.fails >= wd.threshold:
-        raise ValueError("превышен порог ошибок")
+        raise RuntimeError(f"превышен порог ошибок, {wd.fails=}, {wd.threshold=}")
 
     device = scrapli_template | {"host": host}
 
     try:
         with Scrapli(**device) as ssh:
             output = ssh.send_command("show version")
+    except ScrapliAuthenticationFailed as exc:
+        wd.fails += 1
+        raise exc
+    except OSError as exc:
+        raise exc
     except Exception as exc:
         wd.fails += 1
         raise exc

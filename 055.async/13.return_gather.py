@@ -4,7 +4,7 @@ from scrapli import AsyncScrapli
 from scrapli.response import Response
 
 device_scrapli = {
-    "transport": "asyncssh",
+    "transport": "asynctelnet",
     "platform": "cisco_iosxe",
     "auth_username": "admin",
     "auth_password": "P@ssw0rd",
@@ -38,15 +38,20 @@ async def get_output(ip_addresses: list[str], cmd: str) -> dict[str, str]:
     for ip, output in zip(ip_addresses, coros):
         if isinstance(output, Exception):
             print(f"{ip:>15}: (False) {output.__class__.__name__}, {str(output)}")
-        else:
+            result[ip] = ""
+        elif isinstance(output, Response):
             print(f"{ip:>15}: ({not output.failed}) {output.channel_input} -> {output.result[:50]}")
             result[ip] = output.result
+        else:
+            print(f"{ip:>15}: (False) неизвестный формат ответа {type(output)}")
+            result[ip] = ""
+
     return result
 
 
-async def main() -> None:
-    r = await get_output(ip_addresses, "show version")
-    print(r)
+async def main(cmd: str) -> dict[str, str]:
+    r = await get_output(ip_addresses, cmd)
+    return r
 
 
 ip_addresses = [
@@ -65,4 +70,9 @@ ip_addresses = [
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    r = asyncio.run(main("sh clock"))
+    print(r)
+    # parsing
+    # save
+    # r = asyncio.run(main("show ip arp vrf mgmt"))
+    # print(r)

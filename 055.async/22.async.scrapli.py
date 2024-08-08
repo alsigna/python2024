@@ -47,5 +47,5 @@ ip_addresses = [
 
 
 if __name__ == "__main__":
-    # python 02.async.scrapli.py  2.10s user 1.23s system 10% cpu 33.241 total
+    # python 22.async.scrapli.py  0.60s user 0.24s system 3% cpu 21.590 total
     get_output(ip_addresses, "show version")

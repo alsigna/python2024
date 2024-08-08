@@ -59,5 +59,5 @@ ip_addresses = [
 
 
 if __name__ == "__main__":
-    # python 03.async.thread.py  3.03s user 37.24s system 380% cpu 10.588 total
+    # python 23.async.thread.py  0.47s user 0.19s system 18% cpu 3.505 total
     get_output(ip_addresses, "show version")

@@ -22,7 +22,7 @@ class Watchdog(metaclass=Singleton):
 #     _INSTANCE = None
 
 #     def __new__(cls, *args, **kwargs):
-#         if not isinstance(cls._INSTANCE, cls):
+#         if cls._INSTANCE is None:
 #             cls._INSTANCE = super().__new__(cls)
 #         return cls._INSTANCE
 
