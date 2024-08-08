@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import auto
 
+import settings
 from pydantic import AliasPath, BaseModel, Field, field_validator
 from strenum import LowercaseStrEnum
 
@@ -15,6 +16,17 @@ class Vendor(LowercaseStrEnum):
     CISCO: str = auto()
     ELTEX: str = auto()
     HUAWEI: str = auto()
+
+
+class Commands(BaseModel):
+    class Config:
+        extra = "forbid"
+        frozen = True
+        slots = True
+
+    running: str
+    version: str
+    inventory: str
 
 
 class Transport(LowercaseStrEnum):
@@ -45,7 +57,9 @@ class NetboxDevice(BaseModel):
     def map_patform(cls, value: str) -> str:
         NETBOX_SCRAPLI_MAP = {
             "cisco-xe": Platform.CISCO_IOSXE,
+            "cisco-ios": Platform.CISCO_IOSXE,
             "huawei-vrp": Platform.HUAWEI_VRP,
+            "eltex-esr": Platform.ELTEX_ESR,
         }
         return NETBOX_SCRAPLI_MAP.get(value)
 
@@ -56,17 +70,6 @@ class AppResponse(BaseModel):
     output_type: str
     output: str = ""
     msg: str = ""
-
-
-class Commands(BaseModel):
-    class Config:
-        extra = "forbid"
-        frozen = True
-        slots = True
-
-    running: str
-    version: str
-    inventory: str
 
 
 class ABCDevice(BaseModel, ABC):
@@ -94,9 +97,9 @@ class ABCDevice(BaseModel, ABC):
     def scrapli(self) -> dict[str, str]:
         scrapli_template = {
             "transport": Transport.ASYNCTELNET,
-            "auth_username": "admin",
-            "auth_password": "P@ssw0rd",
-            "auth_password": "P@ssw0rd",
+            "auth_username": settings.CLI_USERNAME,
+            "auth_password": settings.CLI_PASSWORD,
+            "auth_secondary": settings.CLI_ENABLE,
             "auth_strict_key": False,
             "ssh_config_file": "./ssh_config",
         }

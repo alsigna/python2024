@@ -1,21 +1,12 @@
 from typing import ClassVar, Type, cast
 
-from models import ABCDevice, Commands, Platform, Vendor
-
-# # @dataclass(repr=False, eq=False)
-# class AristaEOS(ABCDevice):
-#     platform: Platform = Platform.ARISTA_EOS
-#     vendor: Vendor = Vendor.ARISTA
-#     commands: Commands = Commands(
-#         running="show running-config",
-#         version="show version",
-#         inventory="show inventory",
-#     )
+from models import ABCDevice, Commands, Platform, Transport, Vendor
 
 
 class CiscoIOS(ABCDevice):
     platform: ClassVar[Platform] = Platform.CISCO_IOSXE
     vendor: ClassVar[Vendor] = Vendor.CISCO
+    extra_scrapli: ClassVar[dict] = {"transport": Transport.ASYNCSSH}
     commands: ClassVar[Commands] = Commands(
         running="show running-config",
         version="show version",
@@ -23,9 +14,21 @@ class CiscoIOS(ABCDevice):
     )
 
 
+class EltexESR(ABCDevice):
+    platform: ClassVar[Platform] = Platform.ELTEX_ESR
+    vendor: ClassVar[Vendor] = Vendor.ELTEX
+    extra_scrapli: ClassVar[dict] = {"transport": Transport.ASYNCSSH}
+    commands: ClassVar[Commands] = Commands(
+        running="show running-config",
+        version="show version",
+        inventory="show system",
+    )
+
+
 class HuaweiVRP(ABCDevice):
     platform: ClassVar[Platform] = Platform.HUAWEI_VRP
     vendor: ClassVar[Vendor] = Vendor.HUAWEI
+    extra_scrapli: ClassVar[dict] = {"transport": Transport.ASYNCSSH}
     commands: ClassVar[Commands] = Commands(
         running="display current-configuration",
         version="display version",
@@ -37,6 +40,7 @@ class DeviceFactory:
     PLATFORM_MAP = {
         Platform.CISCO_IOSXE: CiscoIOS,
         Platform.HUAWEI_VRP: HuaweiVRP,
+        Platform.ELTEX_ESR: EltexESR,
     }
 
     def __new__(cls, platform: Platform, hostname: str, ip: str, extra_scrapli: dict = {}) -> ABCDevice:
