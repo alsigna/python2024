@@ -7,6 +7,7 @@ device_scrapli = {
     "platform": "cisco_iosxe",
     "auth_username": "admin",
     "auth_password": "P@ssw0rd",
+    "auth_secondary": "P@ssw0rd",
     "auth_strict_key": False,
     "transport_options": {
         "open_cmd": [
