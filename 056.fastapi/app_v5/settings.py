@@ -1,0 +1,8 @@
+APP_NAME = "device-walker"
+
+NETBOX_URL = "http://89.169.172.172"
+NETBOX_TOKEN = "00b0e2f38b09638e610382c2d32a25ab6016bb41"
+
+CLI_USERNAME = "admin"
+CLI_PASSWORD = "P@ssw0rd"
+CLI_ENABLE = "P@ssw0rd"
