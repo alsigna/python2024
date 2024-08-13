@@ -1,21 +1,33 @@
 from abc import ABC, abstractmethod
 from enum import auto
 
-import settings
 from pydantic import AliasPath, BaseModel, Field, field_validator
+from scrapli.response import Response
+from settings import settings
 from strenum import LowercaseStrEnum
 
 
-class Platform(LowercaseStrEnum):
-    CISCO_IOSXE: str = auto()
-    ELTEX_ESR: str = auto()
-    HUAWEI_VRP: str = auto()
-
-
 class Vendor(LowercaseStrEnum):
-    CISCO: str = auto()
-    ELTEX: str = auto()
-    HUAWEI: str = auto()
+    HUAWEI = auto()  # huawei
+    CISCO = auto()  # cisco
+    ELTEX = auto()
+
+
+class ScrapliPlatform(LowercaseStrEnum):
+    CISCO_IOSXE = auto()
+    HUAWEI_VRP = auto()
+    ELTEX_ESR = auto()
+
+
+class ScrapliTransport(LowercaseStrEnum):
+    ASYNCSSH = auto()
+    ASYNCTELNET = auto()
+
+
+class CommandType(LowercaseStrEnum):
+    RUNNING = auto()
+    VERSION = auto()
+    INVENTORY = auto()
 
 
 class Commands(BaseModel):
@@ -29,22 +41,18 @@ class Commands(BaseModel):
     inventory: str
 
 
-class Transport(LowercaseStrEnum):
-    ASYNCSSH: str = auto()
-    ASYNCTELNET: str = auto()
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}.{self.value.upper()}"
-
-    def __str__(self) -> str:
-        return self.value
+class DeviceWalkerResponse(BaseModel):
+    hostname: str
+    failed: bool
+    output: str = ""
+    msg: str = ""
 
 
 class NetboxDevice(BaseModel):
-    name: str
-    platform: str = Field(validation_alias=AliasPath("platform", "slug"))
-    ip: str = Field(validation_alias=AliasPath("primary_ip4", "address"))
+    hostname: str = Field(alias="name")
     vendor: str = Field(validation_alias=AliasPath("device_type", "manufacturer", "slug"))
+    platform: str = Field(validation_alias=AliasPath("platform", "slug"))
+    ip: str = Field(validation_alias=AliasPath("primary_ip", "address"))
 
     @field_validator("ip")
     @classmethod
@@ -52,35 +60,28 @@ class NetboxDevice(BaseModel):
         ip, _ = value.split("/")
         return ip
 
-    @field_validator("platform")
-    @classmethod
-    def map_patform(cls, value: str) -> str:
-        NETBOX_SCRAPLI_MAP = {
-            "cisco-xe": Platform.CISCO_IOSXE,
-            "cisco-ios": Platform.CISCO_IOSXE,
-            "huawei-vrp": Platform.HUAWEI_VRP,
-            "eltex-esr": Platform.ELTEX_ESR,
-        }
-        return NETBOX_SCRAPLI_MAP.get(value)
 
-
-class AppResponse(BaseModel):
-    failed: bool
-    hostname: str
-    output_type: str
-    output: str = ""
-    msg: str = ""
+device = {
+    "host": "1.2.3.4",
+    "platform": "cisco_iosxe",
+    "platform": "huawei_vrp",
+    "platform": "eltex_esr",
+    "auth_username": "admin",
+    "auth_password": "P@ssw0rd",
+    "auth_secondary": "P@ssw0rd",
+    "auth_strict_key": False,
+    "ssh_config_file": "./ssh_config",
+}
 
 
 class ABCDevice(BaseModel, ABC):
     hostname: str
     ip: str
-
-    extra_scrapli: dict = {}
+    custom_scrapli: dict = {}
 
     @property
     @abstractmethod
-    def platform(self) -> Platform:
+    def platform(self) -> ScrapliPlatform:
         pass
 
     @property
@@ -93,17 +94,21 @@ class ABCDevice(BaseModel, ABC):
     def commands(self) -> Commands:
         pass
 
+    @abstractmethod
+    def parse_version(self, output: Response) -> str:
+        pass
+
     @property
     def scrapli(self) -> dict[str, str]:
         scrapli_template = {
-            "transport": Transport.ASYNCTELNET,
+            "transport": ScrapliTransport.ASYNCTELNET,
             "auth_username": settings.CLI_USERNAME,
             "auth_password": settings.CLI_PASSWORD,
             "auth_secondary": settings.CLI_ENABLE,
             "auth_strict_key": False,
             "ssh_config_file": "./ssh_config",
         }
-        return scrapli_template | {"platform": self.platform} | {"host": self.ip} | self.extra_scrapli
+        return scrapli_template | {"platform": self.platform} | {"host": self.ip} | self.custom_scrapli
 
     def __str__(self) -> str:
         return f"{self.hostname}/{self.ip} ({self.vendor})"

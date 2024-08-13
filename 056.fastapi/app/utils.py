@@ -1,26 +1,12 @@
-import asyncio
-import logging
 from typing import Any
 
 import aiohttp
-import settings
-from async_lru import alru_cache
-from exceptions import (
-    CLIAuthenticationFailed,
-    CLIError,
-    CLITimeoutError,
-    NetboxDeviceAmbiguousError,
-    NetboxDeviceNotFoundError,
-    NetboxDeviceValidationError,
-    NetboxRequestError,
-)
+from exceptions import CLIAuthenticationError, CLITimedOutError, NetboxDeviceAmbError, NetboxDeviceNotFoundError
 from models import ABCDevice, NetboxDevice
 from scrapli import AsyncScrapli
 from scrapli.exceptions import ScrapliAuthenticationFailed, ScrapliConnectionError
 from scrapli.response import Response
-
-log = logging.getLogger("uvicorn")
-sem = asyncio.Semaphore(settings.CLI_MAX_CONNECTIONS)
+from settings import settings
 
 
 class Singleton(type):
@@ -36,68 +22,56 @@ class Singleton(type):
 
 class NetboxWalker(metaclass=Singleton):
     def __init__(self) -> None:
-        self._session = aiohttp.ClientSession(
-            base_url=settings.NETBOX_URL,
-            connector=aiohttp.TCPConnector(
-                limit=settings.NETBOX_MAX_CONNECTIONS,
-                ssl=False,
-            ),
+        self.connector = aiohttp.TCPConnector(limit=100, ssl=False)
+        self.params = (("exclude", "config_context"),)
+        self.session = aiohttp.ClientSession(
+            connector=self.connector,
+            base_url=str(settings.NETBOX_URL),
+            raise_for_status=True,
             headers={
                 "Authorization": f"Token {settings.NETBOX_TOKEN}",
-                "Accept": "application/json",
-                "Content-Transfer-Encoding": "application/json",
+                "Content-Type": "application/json",
+                "Accept-Charset": "application/json",
+                "User-Agent": settings.APP_NAME,
             },
         )
-        self.params = (("exclude", "config_context"),)
-        self.api_device = "/api/dcim/devices/"
 
     async def close(self) -> None:
-        await self._session.close()
+        await self.session.close()
 
-    async def get_netbox_device(self, hostname: str) -> dict[str, Any]:
-        params = self.params + (("name", hostname),)
-        async with self._session.get(
-            url=self.api_device,
-            params=params,
+    async def get_device_by_hostname(self, hostname: str) -> dict[Any, Any]:
+        async with self.session.get(
+            url="/api/dcim/devices/",
+            params=self.params + (("name", hostname),),
         ) as response:
             response.raise_for_status()
-            return await response.json()
+            result = await response.json()
+            return result
 
 
-@alru_cache(maxsize=256)
 async def get_netbox_device(hostname: str) -> NetboxDevice:
-    api = NetboxWalker()
-    try:
-        nb_response = await api.get_netbox_device(hostname)
-    except Exception as exc:
-        raise NetboxRequestError(f"Ошибка в Netbox запросе. {exc.__class__.__name__}: {str(exc)}")
+    nb_walker = NetboxWalker()
+    j = await nb_walker.get_device_by_hostname(hostname)
 
-    if nb_response["count"] == 0:
-        raise NetboxDeviceNotFoundError(f"устройство {hostname} не найдено в Netbox")
-    elif nb_response["count"] != 1:
-        raise NetboxDeviceAmbiguousError(f"в Netbox найдено больше одного {hostname}")
-    else:
-        try:
-            nb_device = NetboxDevice.model_validate(nb_response["results"][0])
-        except Exception as exc:
-            raise NetboxDeviceValidationError(f"Ошибка валидации модели. {exc.__class__.__name__}: {str(exc)}")
+    if j.get("count") == 0:
+        raise NetboxDeviceNotFoundError(f"{hostname} нет в Netbox")
+    elif j.get("count") >= 2:
+        raise NetboxDeviceAmbError(f"Множество устройств {hostname} в Netbox")
+
+    device = j.get("results")[0]
+    nb_device = NetboxDevice.model_validate(device)
     return nb_device
 
 
-async def get_scrapli_output(device: ABCDevice, output: str) -> Response:
-    log_id = f"{device}/{output}:"
-    cmd = getattr(device.commands, output)
+async def get_scrapli_output(device: ABCDevice, output_type: str) -> Response:
+    cmd = getattr(device.commands, output_type)
+
     try:
-        async with sem:
-            log.debug(f"{log_id} подключение к устройству...")
-            async with AsyncScrapli(**device.scrapli) as cli:
-                output = await cli.send_command(cmd)
-    except (ScrapliConnectionError, OSError) as exc:
-        raise CLITimeoutError("Невозможно подключиться к устройству")
-    except ScrapliAuthenticationFailed as exc:
-        raise CLIAuthenticationFailed("Некорректные параметры доступа")
-    except Exception as exc:
-        raise CLIError(f"Ошибка сбора вывода. {exc.__class__.__name__}: {str(exc)}")
-    else:
-        log.debug(f"{log_id} сбор с устройства завершен")
+        async with AsyncScrapli(**device.scrapli) as cli:
+            output: Response = await cli.send_command(cmd)
+    except ScrapliAuthenticationFailed:
+        raise CLIAuthenticationError(f"Неправильные логин/пароль на устройство {device}")
+    except (ScrapliConnectionError, OSError):
+        raise CLITimedOutError(f"Устройство {device} недоступно")
+
     return output

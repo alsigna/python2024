@@ -1,100 +1,100 @@
-import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-import settings
-from exceptions import CLIError, NetboxError
-from factory import DeviceFactory
+from exceptions import DeviceWalkerError
+from factory import Device
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from models import ABCDevice, AppResponse, Commands, NetboxDevice
+from models import CommandType, DeviceWalkerResponse, NetboxDevice
 from scrapli.response import Response
 from utils import NetboxWalker, get_netbox_device, get_scrapli_output
+from uvicorn.config import LOGGING_CONFIG
+
+LOGGING_CONFIG["formatters"]["default"].update(
+    {
+        "fmt": "%(asctime)s %(levelprefix)s %(message)s",
+        "datefmt": "%Y-%m-%d %H:%M:%S",
+    }
+)
+LOGGING_CONFIG["formatters"]["access"].update(
+    {
+        "fmt": '%(asctime)s %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s',
+        "datefmt": "%Y-%m-%d %H:%M:%S",
+    }
+)
+
 
 log = logging.getLogger("uvicorn")
-log.setLevel(logging.DEBUG)
-sem = asyncio.Semaphore(settings.CLI_MAX_CONNECTIONS)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    nb_api = NetboxWalker()
+    # до старта
+    log.setLevel("DEBUG")
+
+    nb_walker = NetboxWalker()
     yield
-    await nb_api.close()
+    # после старта
+    await nb_walker.close()
+    log.debug("сессия aiohttp закрыта")
 
 
 app = FastAPI(lifespan=lifespan)
 
 
-@app.get("/{hostname}/{output_type}/")
-async def get_device_command(hostname: str, output_type: str) -> JSONResponse:
-    def return_error(msg: str) -> JSONResponse:
+@app.get("/api/v1/{hostname}/{command_type}/")
+async def get_output(hostname: str, command_type: CommandType, raw: bool = False):
+    def return_error(msg) -> JSONResponse:
         return JSONResponse(
             status_code=400,
-            content=AppResponse(
-                failed=True,
+            content=DeviceWalkerResponse(
                 hostname=hostname,
-                output_type=output_type,
+                failed=True,
                 msg=msg,
             ).model_dump(),
         )
 
-    if output_type not in Commands.model_fields:
-        return return_error("неизвестный тип вывода")
-    log_id = f"{hostname}/{output_type}:"
-    log.debug(f"{log_id} тип вывода {output_type} существует")
-
+    log.debug(f"запрос команды {command_type} для устройства {hostname}")
+    # данные из Netbox
     try:
         nb_device: NetboxDevice = await get_netbox_device(hostname)
-    except NetboxError as exc:
-        msg = f"{exc.__class__.__name__}: {str(exc)}"
-        log.error(f"{log_id} {msg}")
-        return return_error(msg)
+    except DeviceWalkerError as exc:
+        log.exception(exc)
+        return return_error(str(exc))
     except Exception as exc:
-        msg = f"Неизвестное исключение при работе с Netbox: {exc.__class__.__name__}: {str(exc)}"
-        log.error(f"{log_id} {msg}")
+        msg = f"Неизвестная ошибка при обращении к Netbox {exc.__class__.__name__} {str(exc)}"
         return return_error(msg)
 
-    log.debug(f"{log_id} данные из netbox корректно получены")
-
-    device: ABCDevice = DeviceFactory(
-        platform=nb_device.platform,
-        hostname=nb_device.name,
-        ip=nb_device.ip,
-    )
-    log.debug(f"{log_id} для устройства выбран драйвер {device.__class__.__name__}")
+    # фабрика
     try:
-        output: Response = await get_scrapli_output(device, output_type)
-    except CLIError as exc:
-        msg = f"{exc.__class__.__name__}: {str(exc)}"
-        log.error(f"{log_id} {msg}")
-        return return_error(msg)
+        scrapli_device = Device(**nb_device.model_dump())
+    except DeviceWalkerError as exc:
+        return return_error(str(exc))
     except Exception as exc:
-        msg = f"Неизвестное исключение при работе с Netbox: {exc.__class__.__name__}: {str(exc)}"
-        log.error(f"{log_id} {msg}")
+        msg = f"Неизвестная ошибка фабрики {exc.__class__.__name__} {str(exc)}"
         return return_error(msg)
 
-    if output.failed:
-        msg = "ошибка сбора команды"
-        log.error(f"{log_id} {msg}, {output.result}")
-        return JSONResponse(
-            status_code=400,
-            content=AppResponse(
-                failed=True,
-                hostname=hostname,
-                output_type=output_type,
-                output=f"{output.channel_input}\n{output.result}",
-                msg=msg,
-            ).model_dump(),
-        )
+    # scrapli
+    try:
+        output: Response = await get_scrapli_output(scrapli_device, command_type)
+    except DeviceWalkerError as exc:
+        log.exception(exc)
+        return return_error(str(exc))
+    except Exception as exc:
+        log.exception(exc)
+        msg = f"Неизвестная ошибка при подключении к устройству {hostname} {exc.__class__.__name__} {str(exc)}"
+        return return_error(msg)
+
+    if command_type == CommandType.VERSION and not raw:
+        output_str = scrapli_device.parse_version(output)
     else:
-        log.info(f"{log_id} вывод успешно собран")
-        return JSONResponse(
-            status_code=200,
-            content=AppResponse(
-                failed=False,
-                hostname=hostname,
-                output_type=output_type,
-                output=output.result,
-            ).model_dump(),
-        )
+        output_str = output.result
+
+    return JSONResponse(
+        status_code=200,
+        content=DeviceWalkerResponse(
+            hostname=hostname,
+            failed=output.failed,
+            output=output_str,
+        ).model_dump(),
+    )

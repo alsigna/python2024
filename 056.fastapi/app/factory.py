@@ -1,62 +1,72 @@
-from typing import ClassVar, Type, cast
+import logging
+import re
+from typing import Any, ClassVar
 
-from models import ABCDevice, Commands, Platform, Transport, Vendor
+from exceptions import FactoryError
+from models import ABCDevice, Commands, ScrapliPlatform, ScrapliTransport, Vendor
+from scrapli.response import Response
+
+log = logging.getLogger("uvicorn")
 
 
-class CiscoIOS(ABCDevice):
-    platform: ClassVar[Platform] = Platform.CISCO_IOSXE
+class CiscoXE(ABCDevice):
+    platform: ClassVar[ScrapliPlatform] = ScrapliPlatform.CISCO_IOSXE
     vendor: ClassVar[Vendor] = Vendor.CISCO
-    extra_scrapli: ClassVar[dict] = {"transport": Transport.ASYNCSSH}
     commands: ClassVar[Commands] = Commands(
         running="show running-config",
         version="show version",
         inventory="show inventory",
     )
+    custom_scrapli: dict[str, str] = {"transport": ScrapliTransport.ASYNCSSH}
 
-
-class EltexESR(ABCDevice):
-    platform: ClassVar[Platform] = Platform.ELTEX_ESR
-    vendor: ClassVar[Vendor] = Vendor.ELTEX
-    extra_scrapli: ClassVar[dict] = {"transport": Transport.ASYNCSSH}
-    commands: ClassVar[Commands] = Commands(
-        running="show running-config",
-        version="show version",
-        inventory="show system",
-    )
+    def parse_version(self, output: Response) -> str:
+        try:
+            return output.textfsm_parse_output()[0].get("version")
+        except Exception:
+            return output.result
 
 
 class HuaweiVRP(ABCDevice):
-    platform: ClassVar[Platform] = Platform.HUAWEI_VRP
+    platform: ClassVar[ScrapliPlatform] = ScrapliPlatform.HUAWEI_VRP
     vendor: ClassVar[Vendor] = Vendor.HUAWEI
-    extra_scrapli: ClassVar[dict] = {"transport": Transport.ASYNCSSH}
     commands: ClassVar[Commands] = Commands(
         running="display current-configuration",
         version="display version",
         inventory="display device",
     )
 
+    def parse_version(self, output: Response) -> str:
+        if m := re.search(r"Software,\s+Version\s+(?P<version>\S+)\s+", output.result):
+            return m.group("version")
+        else:
+            output.result
 
-class DeviceFactory:
+
+class EltexESR(ABCDevice):
+    platform: ClassVar[ScrapliPlatform] = ScrapliPlatform.ELTEX_ESR
+    vendor: ClassVar[Vendor] = Vendor.ELTEX
+    commands: ClassVar[Commands] = Commands(
+        running="show running-config",
+        version="show version",
+        inventory="show system",
+    )
+
+    def parse_version(self, output: Response) -> str:
+        return output.result
+
+
+class Device:
     PLATFORM_MAP = {
-        Platform.CISCO_IOSXE: CiscoIOS,
-        Platform.HUAWEI_VRP: HuaweiVRP,
-        Platform.ELTEX_ESR: EltexESR,
+        "cisco-ios": CiscoXE,
+        "cisco-xe": CiscoXE,
+        "huawei-vrp": HuaweiVRP,
+        "eltex-esr": EltexESR,
     }
 
-    def __new__(cls, platform: Platform, hostname: str, ip: str, extra_scrapli: dict = {}) -> ABCDevice:
-        _class: Type[ABCDevice] = cls.get_class(platform)
-        device = _class(hostname=hostname, ip=ip, extra_scrapli=extra_scrapli)
-        device = cast(ABCDevice, device)
-        return device
-
-    @classmethod
-    def get_class(cls, platform: str) -> Type[ABCDevice]:
-        _class = cls.PLATFORM_MAP.get(platform)
+    def __new__(cls, platform: str, hostname: str, ip: str, **kwargs: dict[Any, Any]) -> ABCDevice:
+        _class: ABCDevice | None = cls.PLATFORM_MAP.get(platform)
         if _class is None:
-            raise NotImplementedError(f"Неизвестная платформа {platform}")
-        return _class
-
-    @classmethod
-    def create(cls, platform: str, hostname: str, ip: str, extra_scrapli: dict = {}) -> ABCDevice:
-        _class = cls.get_class(platform)
-        return _class(hostname=hostname, ip=ip, extra_scrapli=extra_scrapli)
+            raise FactoryError(f"неизвестный тип платформы {platform}")
+        log.debug(f"для устройства {hostname} выбран класс {_class.__name__}")
+        device = _class(hostname=hostname, ip=ip)
+        return device

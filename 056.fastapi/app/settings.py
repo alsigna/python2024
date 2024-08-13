@@ -1,9 +1,19 @@
-NETBOX_URL = "http://89.169.172.172"
-NETBOX_TOKEN = "00b0e2f38b09638e610382c2d32a25ab6016bb41"
-NETBOX_MAX_CONNECTIONS = 100
+from pydantic import HttpUrl
+from pydantic_settings import BaseSettings
 
 
-CLI_USERNAME = "admin"
-CLI_PASSWORD = "P@ssw0rd"
-CLI_ENABLE = "P@ssw0rd"
-CLI_MAX_CONNECTIONS = 10
+class Settings(BaseSettings):
+    class Config:
+        env_file = ".env"
+
+    APP_NAME: str = "device-walker"
+
+    NETBOX_URL: HttpUrl
+    NETBOX_TOKEN: str
+
+    CLI_USERNAME: str
+    CLI_PASSWORD: str
+    CLI_ENABLE: str
+
+
+settings = Settings()

@@ -1,0 +1,8 @@
+strenum
+aiohttp
+pydantic_settings
+async_lru
+fastapi[standard]
+scrapli[asyncssh]
+scrapli[textfsm]
+scrapli-community
