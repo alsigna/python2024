@@ -61,19 +61,6 @@ class NetboxDevice(BaseModel):
         return ip
 
 
-device = {
-    "host": "1.2.3.4",
-    "platform": "cisco_iosxe",
-    "platform": "huawei_vrp",
-    "platform": "eltex_esr",
-    "auth_username": "admin",
-    "auth_password": "P@ssw0rd",
-    "auth_secondary": "P@ssw0rd",
-    "auth_strict_key": False,
-    "ssh_config_file": "./ssh_config",
-}
-
-
 class ABCDevice(BaseModel, ABC):
     hostname: str
     ip: str

@@ -24,7 +24,7 @@ def get_netbox_item_recursion(path: str, query: str = "") -> list[dict[str, Any]
     url = os.environ.get("NB_URL", "")
     token = os.environ.get("NB_TOKEN", "")
     if not all([url, token]):
-        raise ValueError("отсутсвуют параметры подключения к серверу")
+        raise ValueError("отсутствуют параметры подключения к серверу")
 
     headers = {
         "Authorization": f"Token {token}",
@@ -84,7 +84,7 @@ def get_netbox_item_flat(path: str, query: str = "") -> list[dict[str, Any]]:
     }
     # проверка, что определены токен и адрес
     if not all([url, token]):
-        raise ValueError("отсутсвуют параметры подключения к серверу")
+        raise ValueError("отсутствуют параметры подключения к серверу")
 
     # первый запрос
     response = _make_request(path, query)
