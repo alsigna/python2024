@@ -1,0 +1,2 @@
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  10.255.12.1             -   001e.14fb.73c0  ARPA   Port-channel1
