@@ -6,7 +6,7 @@ import textfsm
 output = """
 Router# show ip interface brief
 Interface             IP-Address      OK?    Method Status     Protocol
-GigabitEthernet0/1    192.168.100.1   YES    unset  up         up
+GigabitEthernet0/1    192.168.100.1   YES    unset  down         up
 GigabitEthernet0/2    192.168.190.235 YES    unset  up         down
 TenGigabitEthernet2/1 unassigned      YES    unset  up         up
 TenGigabitEthernet2/2 10.255.1.3      YES    unset  up         up

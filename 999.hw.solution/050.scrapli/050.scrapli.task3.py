@@ -68,7 +68,7 @@ class CiscoIOS:
         return self._platform
 
     @platform.setter
-    def platform(self, platform: ScrapliPlatform) -> None:
+    def platform(self, platform: ScrapliPlatform | str) -> None:
         if platform not in ScrapliPlatform:
             platform_list = ", ".join(ScrapliPlatform._value2member_map_.keys())
             raise ValueError(f"platform должна быть из списка: {platform_list}")
@@ -82,7 +82,7 @@ class CiscoIOS:
         return self._transport
 
     @transport.setter
-    def transport(self, transport: ScrapliTransport) -> None:
+    def transport(self, transport: ScrapliTransport | str) -> None:
         if transport not in ScrapliTransport:
             transport_list = ", ".join(ScrapliTransport._value2member_map_.keys())
             raise ValueError(f"transport должен быть из списка: {transport_list}")
@@ -162,8 +162,8 @@ if __name__ == "__main__":
 # print(f"{device.transport=}")
 
 
-device = CiscoIOS("192.168.122.101", "admin", "P@ssw0rd")
-device.open()
-print(device.get_version())
-print(device.conn.send_command("show clock").result)
-device.close
+# device = CiscoIOS("192.168.122.101", "admin", "P@ssw0rd")
+# device.open()
+# print(device.get_version())
+# print(device.conn.send_command("show clock").result)
+# device.close

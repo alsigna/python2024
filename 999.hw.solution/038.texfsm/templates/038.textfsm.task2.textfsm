@@ -4,10 +4,9 @@ Value role (\w+)
 Value sw (\w+)
 
 Start
-  ^\s*$$ -> Section
+  ^\s*$$ -> Member
 
-Section
+Member
   ^\w+\s+${id}\(${role}\)\s+: uptime\s+is\s+${uptime}
-  ^Port\s+Single-Col\s+ -> EOF
   ^Software\s+Version\s+:.*\(${sw}\)
   ^\s*$$ -> Record

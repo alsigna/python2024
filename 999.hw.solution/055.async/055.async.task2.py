@@ -43,7 +43,7 @@ async def collect_output(device: dict[str, Any], commands: list[str]) -> None:
         log.debug(f"{host}: connecting to host...")
         try:
             async with AsyncScrapli(**device) as cli:
-                log.debug(f"{host}: connecting to host")
+                log.debug(f"{host}: connection done")
                 outputs = await cli.send_commands(commands)
         except Exception as exc:
             log.warning(f"{host}: connection failed")
@@ -71,7 +71,7 @@ async def main() -> None:
     result = {}
     devices = get_scrapli_devices("devices.yaml")
     coros = await asyncio.gather(
-        *[asyncio.create_task(collect_output(device, COMMANDS), name=device.get("host")) for device in devices],
+        *[asyncio.create_task(collect_output(device, COMMANDS)) for device in devices],
         return_exceptions=True,
     )
     hosts = [device.get("host") for device in devices]

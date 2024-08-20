@@ -23,10 +23,10 @@ from scrapli.exceptions import ScrapliAuthenticationFailed, ScrapliConnectionErr
 device = {
     "platform": "cisco_iosxe",
     "host": "192.168.122.101",
-    "auth_username": "admin",
+    "auth_username": "user",
     "auth_password": "P@ssw0rd",
     "auth_strict_key": False,
-    "platform": "system",
+    "transport": "system",
 }
 
 

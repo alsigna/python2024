@@ -92,9 +92,9 @@ class ConfigTreeParser:
     def parse(cls, config: str) -> ConfigTree:
         root = ConfigTree()
 
-        section: list = [root]
-        # количество пробелов в предыдущей итерации
-        last_spaces = 0
+        section = [root]
+        spaces = [0]
+
         for line in config.splitlines():
             if len(line.strip()) == 0:
                 continue
@@ -105,15 +105,17 @@ class ConfigTreeParser:
             current_space = len(line) - len(line.lstrip())
 
             # мы вошли в секцию
-            if current_space > last_spaces:
+            if current_space > spaces[-1]:
                 node = list(section[-1].children.values())[-1]
                 section.append(node)
+                spaces.append(current_space)
             # мы вышли из секции
-            elif current_space < last_spaces:
-                _ = section.pop()
+            elif current_space < spaces[-1]:
+                while current_space != spaces[-1]:
+                    _ = section.pop()
+                    _ = spaces.pop()
 
             _ = ConfigTree(line.lstrip(), section[-1])
-            last_spaces = current_space
         return root
 
 
@@ -247,14 +249,14 @@ def assert_parse_nested() -> None:
           logging enable
            level 1
             level 2
-        !
-        memory free low-watermark processor 71497
+          memory free low-watermark processor 71497
         !
         spanning-tree extend system-id
         !
         """
     ).strip()
     ct = ConfigTreeParser.parse(config)
+    print(ct.config)
     assert ct.config == config, "wrong parsing nested config"
 
 

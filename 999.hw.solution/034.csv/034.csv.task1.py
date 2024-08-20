@@ -17,8 +17,9 @@ SB_MAP3     192.168.102.139   SB_MAP2              192.168.102.138  Virtual-Dot1
 aps: dict[str, str] = {}
 for line in output.splitlines()[2:]:
     ap, ip, *_ = line.split()
-    if ap not in aps:
-        aps[ap] = ip
+    # if ap not in aps:
+    aps.update({ap: ip})
+
 
 to_csv = [("ap_name", "ap_ip")]
 to_csv.extend(list(aps.items()))
@@ -26,6 +27,6 @@ to_csv.extend(list(aps.items()))
 
 filename = Path(__file__).parent / f"034.csv.csv"
 with open(filename, "w") as f:
-    writter = csv.writer(f)
+    writer = csv.writer(f)
     for line in to_csv:
-        writter.writerow(line)
+        writer.writerow(line)

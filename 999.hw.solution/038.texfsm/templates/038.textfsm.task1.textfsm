@@ -7,7 +7,10 @@ Value state (\b.*\b)
 
 Start
   ^\s*Switch#\s+Role\s+Mac\s+Address
+  ^\s+H/W\s+Current
+  ^\s?----
   ^${hostname}[#|>]
   ^\s*\*?${id}\s+${role}\s+${mac}\s+${priority}\s+\d*\s*${state} -> Record
+  ^.* -> Error
 
 EOF

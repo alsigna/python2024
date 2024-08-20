@@ -73,9 +73,11 @@ for interface in re.finditer(
 ):
     if interface.group("ip") is None:
         continue
+    name = interface.group("name")
+    if name.startswith(("Loopback", "Vlan")):
+        continue
     acl_in = interface.group("acl_in")
     acl_out = interface.group("acl_out")
-    name = interface.group("name")
 
     for real_acl, target_acl in zip((acl_in, acl_out), ("acl_mgmt_in", "acl_mgmt_out")):
         if real_acl != target_acl:

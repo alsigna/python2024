@@ -12,7 +12,7 @@ from netmiko import ConnectHandler
 from netmiko.exceptions import NetmikoAuthenticationException, NetmikoTimeoutException
 
 device = {
-    "device_type": "cisco_x1e",
+    "device_type": "cisco_xe",
     "host": "192.168.122.101",
     "username": "admin",
     "password": "P@ssw0rd",

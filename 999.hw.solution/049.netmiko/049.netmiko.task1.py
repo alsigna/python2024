@@ -8,7 +8,7 @@ from netmiko import ConnectHandler
 device = {
     "device_type": "cisco_xe",
     "host": "192.168.122.101",
-    "username": "user",
+    "username": "admin",
     "password": "P@ssw0rd",
     "secret": "P@ssw0rd",
 }

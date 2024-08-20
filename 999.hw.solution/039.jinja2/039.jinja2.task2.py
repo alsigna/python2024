@@ -34,7 +34,7 @@ interfaces = {
         "mtu": 1600,
         "ip": "192.168.1.1",
         "mask": "255.255.255.252",
-        "type": "external",
+        "type": "internal",
         "bfd": True,
     },
 }
