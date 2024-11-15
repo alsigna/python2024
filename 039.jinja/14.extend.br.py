@@ -5,8 +5,8 @@ from jinja2 import Environment, FileSystemLoader
 from netaddr import IPNetwork
 
 
-def shift_ip_address(addr, offest):
-    return IPNetwork(addr).ip + offest
+def shift_ip_address(addr, offset):
+    return IPNetwork(addr).ip + offset
 
 
 template_dir = str(Path(Path(__file__).parent, "templates"))

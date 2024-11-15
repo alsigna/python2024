@@ -15,7 +15,7 @@ def get_output(device: dict[str, str], cmd: str) -> str:
         ssh.enable()
         output = ssh.send_command(cmd)
         output = ssh.send_config_set(
-            config_commands="crypto key generate rsa label SSH nodulus 2048",
+            config_commands="crypto key generate rsa label SSH modulus 2048",
             error_pattern="%",
         )
     return output

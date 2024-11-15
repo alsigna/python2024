@@ -10,7 +10,7 @@ with paramiko.SSHClient() as client:
         username="alexigna",
         pkey=privkey,
     )
-    client.exec_command("rm python.exaple")
+    client.exec_command("rm python.example")
     stdin, stdout, stderr = client.exec_command("ls -la")
     stdin.close()
 

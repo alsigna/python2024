@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class AbstactDevice(ABC):
+class AbstractDevice(ABC):
     @property
     @abstractmethod
     def platform(self) -> str: ...
@@ -13,14 +13,14 @@ class AbstactDevice(ABC):
     def get_running_config(self) -> str: ...
 
 
-class CiscoIOS(AbstactDevice):
+class CiscoIOS(AbstractDevice):
     platform = "cisco_ios"
 
     def get_running_config(self) -> str:
         return "cisco ios config"
 
 
-class HuaweiVRP(AbstactDevice):
+class HuaweiVRP(AbstractDevice):
     platform = "huawei_vrp"
 
     def get_running_config(self) -> str:
@@ -34,7 +34,7 @@ class DeviceFactory:
     }
 
     @classmethod
-    def create(cls, platform: str, *args, **kwargs) -> AbstactDevice:
+    def create(cls, platform: str, *args, **kwargs) -> AbstractDevice:
         _device_class = cls.PLATFORM_MAP.get(platform)
         if _device_class is None:
             raise NotImplementedError("unknown platform")
@@ -55,7 +55,7 @@ class Device:
         "huawei_vrp": HuaweiVRP,
     }
 
-    def __new__(cls, platform: str, *args, **kwargs) -> AbstactDevice:
+    def __new__(cls, platform: str, *args, **kwargs) -> AbstractDevice:
         _device_class = cls.PLATFORM_MAP.get(platform)
         if _device_class is None:
             raise NotImplementedError("unknown platform")

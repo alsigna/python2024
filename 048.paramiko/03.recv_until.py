@@ -31,9 +31,9 @@ def get_show_output(username: str, password: str, enable: str, ip: str, cmd: str
 
             ssh.send(cmd + "\n")
             result = ""
-            couter = 0
+            counter = 0
             while True:
-                couter += 1
+                counter += 1
                 time.sleep(0.2)
                 result += ssh.recv(1000).decode()
                 if result.endswith(prompt):

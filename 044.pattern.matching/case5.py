@@ -37,7 +37,7 @@ print("\n" * 2 + "=" * 10, "example 3", "=" * 10)
 from collections import namedtuple
 
 # только для примера, пока не знаем Enum для подобных вещей
-Vendor = namedtuple("Vendor", "CISCO HUAWEI ARISTA JINUPER")
+Vendor = namedtuple("Vendor", "CISCO HUAWEI ARISTA JUNIPER")
 VENDOR = Vendor("cisco", "huawei", "arista", "juniper")
 
 data = ["r1", "huawei"]

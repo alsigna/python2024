@@ -97,7 +97,7 @@ class Device(BaseModel):
     @classmethod
     def validate_vendor(cls, value: str) -> str:
         if value.lower() not in ["huawei", "cisco", "arista"]:
-            raise ValueError(f"неизвестный проиводитель {value}")
+            raise ValueError(f"неизвестный производитель {value}")
         return value.upper()
 
     @field_validator("mgmt_ip", mode="before")
